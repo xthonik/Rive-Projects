@@ -18,33 +18,58 @@
         canvas {
         width: 1000px;
         height: 1000px;
-        filter: blur(50px);
+        filter: blur(55px);
+        }
+        button {
+          background-color: blue;
+          color: white;
+          border-radius: 10px;
+          border: none;
+          padding: 10px 20px;
+          cursor: pointer;
         }
     </style>
   </head>
-    
   <body>
 
     <canvas id="canvas"></canvas>
 
     <script src="https://unpkg.com/@rive-app/canvas"></script>
     <script>
-      const r = new rive.Rive({
-        src: "gr_mesh.riv",
-        canvas: document.getElementById("canvas"),
-        autoplay: true,
-        // artboard: "Arboard", // Optional. If not supplied the default is selected
-        stateMachines: "State Machine",
-        onLoad: () => {
-          // Ensure the drawing surface matches the canvas size and device pixel ratio
-          r.resizeDrawingSurfaceToCanvas();
-        },
-      });
+      let r;
+      const initRive = () => {
+        r = new rive.Rive({
+          src: "kolesapaywallbg1.riv",
+          canvas: document.getElementById("canvas"),
+          autoplay: true,
+          stateMachines: "State Machine",
+          onLoad: () => {
+            r.resizeDrawingSurfaceToCanvas();
+            addEventListeners();
+          },
+        });
+      };
+
+      const addEventListeners = () => {
+        const updateSelectorValue = (value) => {
+          const input = r.stateMachineInputs("State Machine").find(input => input.name === "SelectorValue");
+          if (input) {
+            input.value = value;
+          }
+        };
+
+        document.getElementById("selector1").addEventListener("click", () => updateSelectorValue(1));
+        document.getElementById("selector2").addEventListener("click", () => updateSelectorValue(2));
+        document.getElementById("selector3").addEventListener("click", () => updateSelectorValue(3));
+      };
+
+      window.addEventListener("load", initRive);
     </script>
-      <div style="position: absolute; bottom: 20px; width: 100%; text-align: center;">
-        <button id="selector1">Selector 1</button>
-        <button id="selector2">Selector 2</button>
-        <button id="selector3">Selector 3</button>
-      </div>
+
+    <div style="position: absolute; bottom: 20px; width: 100%; text-align: center;">
+      <button id="selector1">Selector 1</button>
+      <button id="selector2">Selector 2</button>
+      <button id="selector3">Selector 3</button>
+    </div>
   </body>
 </html>
