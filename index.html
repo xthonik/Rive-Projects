@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rive Hello World</title>
+    <style>
+        body {
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100vw;
+        height: 100vh;
+        background-color: #ffffff;
+        }
+        canvas {
+        width: 1000px;
+        height: 1000px;
+        filter: blur(50px);
+        }
+    </style>
+  </head>
+    
+  <body>
+
+    <canvas id="canvas"></canvas>
+
+    <script src="https://unpkg.com/@rive-app/canvas"></script>
+    <script>
+      const r = new rive.Rive({
+        src: "gr_mesh.riv",
+        canvas: document.getElementById("canvas"),
+        autoplay: true,
+        // artboard: "Arboard", // Optional. If not supplied the default is selected
+        stateMachines: "State Machine",
+        onLoad: () => {
+          // Ensure the drawing surface matches the canvas size and device pixel ratio
+          r.resizeDrawingSurfaceToCanvas();
+        },
+      });
+    </script>
+      <div style="position: absolute; bottom: 20px; width: 100%; text-align: center;">
+        <button id="selector1">Selector 1</button>
+        <button id="selector2">Selector 2</button>
+        <button id="selector3">Selector 3</button>
+      </div>
+  </body>
+</html>
