@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Kolesa Pay Wall BG Animation</title>
+    <title>Rive Hello World</title>
     <style>
         body {
         margin: 0;
@@ -14,62 +14,98 @@
         width: 100vw;
         height: 100vh;
         background-color: #ffffff;
+        position: relative;
+        overflow: hidden;
         }
         canvas {
-        width: 500px;
-        height: 500px;
-        filter: blur(25px);
+        width: 360px;
+        height: 800px;
+        position: absolute;
         }
-        button {
-          background-color: blue;
-          color: white;
-          border-radius: 10px;
-          border: none;
-          padding: 10px 20px;
-          cursor: pointer;
+        #canvas-blur {
+        backdrop-filter: blur(30px);
+        }
+        .button-container {
+        position: absolute;
+        display: flex;
+        justify-content: space-around;
+        width: 340px;
+        top: 680px;
+        }
+        .button-area {
+        width: 100px;
+        height: 40px;
+        background-color: transparent;
+        border-radius: 8px;
+        cursor: pointer;
         }
     </style>
   </head>
   <body>
 
-    <canvas id="canvas"></canvas>
+    <canvas id="canvas1"></canvas>
+    <canvas id="canvas-blur"></canvas>
+    <canvas id="canvas2"></canvas>
+
+    <div class="button-container">
+      <div id="basic" class="button-area"></div>
+      <div id="gold" class="button-area"></div>
+      <div id="premium" class="button-area"></div>
+    </div>
 
     <script src="https://unpkg.com/@rive-app/canvas"></script>
     <script>
-      let r;
+      let r1, r2;
+
       const initRive = () => {
-        r = new rive.Rive({
-          src: "kolesapaywallbg1.riv",
-          canvas: document.getElementById("canvas"),
+        r1 = new rive.Rive({
+          src: "npu_v1.riv",
+          canvas: document.getElementById("canvas1"),
           autoplay: true,
+          artboard: "Artboard 2",
+          stateMachines: "State Machine 1",
+          onLoad: () => {
+            r1.resizeDrawingSurfaceToCanvas();
+          },
+        });
+
+        r2 = new rive.Rive({
+          src: "npu_v1.riv",
+          canvas: document.getElementById("canvas2"),
+          autoplay: true,
+          artboard: "Artboard",
           stateMachines: "State Machine",
           onLoad: () => {
-            r.resizeDrawingSurfaceToCanvas();
-            addEventListeners();
+            r2.resizeDrawingSurfaceToCanvas();
           },
         });
       };
 
-      const addEventListeners = () => {
-        const updateSelectorValue = (value) => {
-          const input = r.stateMachineInputs("State Machine").find(input => input.name === "SelectorValue");
-          if (input) {
-            input.value = value;
-          }
-        };
+      window.addEventListener("load", initRive);
 
-        document.getElementById("selector1").addEventListener("click", () => updateSelectorValue(1));
-        document.getElementById("selector2").addEventListener("click", () => updateSelectorValue(2));
-        document.getElementById("selector3").addEventListener("click", () => updateSelectorValue(3));
+      const triggerStateMachine = (riveInstance, stateMachineName, triggerName) => {
+        const inputs = riveInstance.stateMachineInputs(stateMachineName);
+        if (!inputs) return;
+        const trigger = inputs.find(input => input.name === triggerName);
+        if (trigger) trigger.fire();
       };
 
-      window.addEventListener("load", initRive);
+      document.getElementById("basic").addEventListener("click", () => {
+        triggerStateMachine(r2, "State Machine", "Trigger 1");
+        triggerStateMachine(r1, "State Machine 1", "State 1");
+      });
+
+      document.getElementById("gold").addEventListener("click", () => {
+        triggerStateMachine(r2, "State Machine", "Trigger 2");
+        triggerStateMachine(r1, "State Machine 1", "State 2");
+      });
+
+      document.getElementById("premium").addEventListener("click", () => {
+        triggerStateMachine(r2, "State Machine", "Trigger 3");
+        triggerStateMachine(r1, "State Machine 1", "State 3");
+      });
+
     </script>
 
-    <div style="position: absolute; bottom: 20px; width: 100%; text-align: center;">
-      <button id="selector1">Selector 1</button>
-      <button id="selector2">Selector 2</button>
-      <button id="selector3">Selector 3</button>
-    </div>
   </body>
 </html>
