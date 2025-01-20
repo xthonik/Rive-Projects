@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Анимация истории загрузки авто</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: black;
+      position: relative;
+    }
+    .background-canvas {
+      width: 360px;
+      height: 700px;
+      background: url('ui.png') no-repeat center center;
+      background-size: cover;
+    }
+    .rive-canvas {
+      width: 150px;
+      height: 150px;
+      position: absolute;
+      top: 46%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: transparent;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="canvas2" class="background-canvas"></canvas>
+  <canvas id="canvas1" class="rive-canvas"></canvas>
+
+  <script src="https://unpkg.com/@rive-app/canvas"></script>
+  <script>
+    let r1;
+
+    const initRive = () => {
+      r1 = new rive.Rive({
+        src: "scanner_v1.riv",
+        canvas: document.getElementById("canvas1"),
+        autoplay: true,
+        // Animation: "Loading Animation",
+        artboard: "Artboard",
+        stateMachines: "State Machine",
+        onLoad: () => {
+          r1.resizeDrawingSurfaceToCanvas();
+        },
+      });
+    };
+
+    window.addEventListener("load", initRive);
+  </script>
+</body>
+</html>
