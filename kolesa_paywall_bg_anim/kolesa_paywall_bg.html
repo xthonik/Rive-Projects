@@ -22,8 +22,19 @@
         height: 800px;
         position: absolute;
         }
+        #canvas1 {
+        display: flex;
+        align-items: top;
+        width: 360px;
+        height: 520px;
+        transform: translateY(-27%);
+        }
+        #canvas2 {
+        
+        }
         #canvas-blur {
-        backdrop-filter: blur(30px);
+       
+        backdrop-filter: blur(40px);
         }
         .button-container {
         position: absolute;
@@ -63,8 +74,8 @@
           src: "npu_v2.riv",
           canvas: document.getElementById("canvas1"),
           autoplay: true,
-          artboard: "Artboard 2",
-          stateMachines: "State Machine 1",
+          artboard: "Artboard 5",
+          stateMachines: "State Machine 5",
           onLoad: () => {
             r1.resizeDrawingSurfaceToCanvas();
           },
@@ -93,17 +104,17 @@
 
       document.getElementById("basic").addEventListener("click", () => {
         triggerStateMachine(r2, "State Machine", "Trigger 1");
-        triggerStateMachine(r1, "State Machine 1", "State 1");
+        triggerStateMachine(r1, "State Machine 5", "State 1");
       });
 
       document.getElementById("gold").addEventListener("click", () => {
         triggerStateMachine(r2, "State Machine", "Trigger 2");
-        triggerStateMachine(r1, "State Machine 1", "State 2");
+        triggerStateMachine(r1, "State Machine 5", "State 2");
       });
 
       document.getElementById("premium").addEventListener("click", () => {
         triggerStateMachine(r2, "State Machine", "Trigger 3");
-        triggerStateMachine(r1, "State Machine 1", "State 3");
+        triggerStateMachine(r1, "State Machine 5", "State 3");
       });
 
     </script>
