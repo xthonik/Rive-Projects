@@ -71,11 +71,11 @@
 
       const initRive = () => {
         r1 = new rive.Rive({
-          src: "npu_v2.riv",
+          src: "npu_bg_anim.riv",
           canvas: document.getElementById("canvas1"),
           autoplay: true,
-          artboard: "Artboard 5",
-          stateMachines: "State Machine 5",
+          artboard: "Artboard 2",
+          stateMachines: "State Machine",
           onLoad: () => {
             r1.resizeDrawingSurfaceToCanvas();
           },
@@ -104,17 +104,17 @@
 
       document.getElementById("basic").addEventListener("click", () => {
         triggerStateMachine(r2, "State Machine", "Trigger 1");
-        triggerStateMachine(r1, "State Machine 5", "State 1");
+        triggerStateMachine(r1, "State Machine", "state1");
       });
 
       document.getElementById("gold").addEventListener("click", () => {
         triggerStateMachine(r2, "State Machine", "Trigger 2");
-        triggerStateMachine(r1, "State Machine 5", "State 2");
+        triggerStateMachine(r1, "State Machine", "state2");
       });
 
       document.getElementById("premium").addEventListener("click", () => {
         triggerStateMachine(r2, "State Machine", "Trigger 3");
-        triggerStateMachine(r1, "State Machine 5", "State 3");
+        triggerStateMachine(r1, "State Machine", "state3");
       });
 
     </script>

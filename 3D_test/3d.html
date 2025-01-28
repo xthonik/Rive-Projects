@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>3D Rotatable Icon - Local EXR HDRI</title>
+    <style>
+        body { margin: 0; }
+        canvas { display: block; }
+        #brightness-control {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            padding: 10px;
+            background-color: rgba(255, 255, 255, 0.7);
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="brightness-control">
+    <label for="hdri-brightness">HDRI Brightness:</label>
+    <input type="range" id="hdri-brightness" min="0" max="2" value="1" step="0.01">
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/loaders/EXRLoader.min.js"></script> <!-- Changed to EXRLoader -->
+
+<script>
+    // Scene, Camera, Renderer
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize( window.innerWidth, window.innerHeight );
+    document.body.appendChild( renderer.domElement );
+
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.outputEncoding = THREE.sRGBEncoding;
+
+    // Ambient Light (for HDRI brightness control)
+    const ambientLight = new THREE.AmbientLight( 0xffffff, 2 );
+    scene.add( ambientLight );
+
+    // Set a default background color
+    scene.background = new THREE.Color( 0xcccccc );
+
+    // Load EXR HDRI environment map - Using EXRLoader and local path
+    const exrLoader = new THREE.EXRLoader(); // Changed to EXRLoader
+    exrLoader.load( 'GSG_ProStudiosMetal_Vol2_01_Env.exr',  // Local file path (assuming in same directory)
+        function ( texture ) {
+            texture.mapping = THREE.EquirectangularReflectionMapping;
+            scene.environment = texture;
+        },
+        function ( xhr ) {
+            console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
+        },
+        function ( error ) {
+            console.error( 'An error occurred loading the EXR HDRI map:', error );
+            // Optional fallback lighting
+            // const directionalLight = new THREE.DirectionalLight( 0xffffff, 1 );
+            // directionalLight.position.set( 1, 1, 1 ).normalize();
+            // scene.add( directionalLight );
+        }
+    );
+
+    // Circle Geometry (rest of the code is the same as before)
+    const circleGeometry = new THREE.CircleGeometry( 1, 32 );
+    const circleMaterial = new THREE.MeshStandardMaterial( { color: 0x007bff, side: THREE.FrontSide, roughness: 0.5, metalness: 0.1 } );
+    const circle = new THREE.Mesh( circleGeometry, circleMaterial );
+    scene.add( circle );
+
+    // Plus Symbol Shape
+    const plusShape = new THREE.Shape();
+    const plusWidth = 0.8;
+    const plusThickness = 0.2;
+
+    plusShape.moveTo(-plusWidth / 2, plusThickness / 2);
+    plusShape.lineTo(plusWidth / 2, plusThickness / 2);
+    plusShape.lineTo(plusWidth / 2, -plusThickness / 2);
+    plusShape.lineTo(plusThickness / 2, -plusThickness / 2);
+    plusShape.lineTo(plusThickness / 2, -plusWidth / 2);
+    plusShape.lineTo(-plusThickness / 2, -plusWidth / 2);
+    plusShape.lineTo(-plusThickness / 2, -plusThickness / 2);
+    plusShape.lineTo(-plusWidth / 2, -plusThickness / 2);
+    plusShape.lineTo(-plusWidth / 2, plusThickness / 2);
+
+
+    // Extrude Settings for Plus Symbol
+    const extrudeSettings = {
+        depth: 0.2,
+        bevelEnabled: false,
+    };
+
+    // Extruded Geometry for Plus Symbol
+    const plusGeometry = new THREE.ExtrudeGeometry( plusShape, extrudeSettings );
+    const plusMaterial = new THREE.MeshStandardMaterial( { color: 0xffffff, side: THREE.FrontSide, roughness: 0.2, metalness: 0.8 } );
+    const plusMesh = new THREE.Mesh( plusGeometry, plusMaterial );
+    plusMesh.position.set(0, 0, 0.1);
+    scene.add( plusMesh );
+
+    // Group, Camera, Rotation, Event Listeners, Brightness Control, Animation Loop (all same as before)
+    const iconGroup = new THREE.Group();
+    iconGroup.add(circle);
+    iconGroup.add(plusMesh);
+    scene.add(iconGroup);
+
+    camera.position.z = 3;
+
+    let isDragging = false;
+    let previousMousePosition = { x: 0, y: 0 };
+
+    renderer.domElement.addEventListener('mousedown', (event) => { isDragging = true; });
+    renderer.domElement.addEventListener('mouseup', (event) => { isDragging = false; });
+    renderer.domElement.addEventListener('mousemove', (event) => {
+        if (isDragging) {
+            const deltaMove = { x: event.clientX - previousMousePosition.x, y: event.clientY - previousMousePosition.y };
+            const rotationSpeed = 0.01;
+            iconGroup.rotation.y += deltaMove.x * rotationSpeed;
+            iconGroup.rotation.x += deltaMove.y * rotationSpeed;
+        }
+        previousMousePosition = { x: event.clientX, y: event.clientY };
+    });
+
+    const brightnessSlider = document.getElementById('hdri-brightness');
+    brightnessSlider.addEventListener('input', function() { ambientLight.intensity = parseFloat(this.value); });
+
+    function animate() {
+        requestAnimationFrame( animate );
+        renderer.render( scene, camera );
+    }
+    animate();
+</script>
+
+</body>
+</html>
