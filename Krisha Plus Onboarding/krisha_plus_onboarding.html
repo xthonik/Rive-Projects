@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Анимация истории загрузки авто</title>
+  <title>Krisha Plus Onboarding</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
   <style>
     body {
       display: flex;
@@ -14,37 +15,101 @@
       background-color: black;
       position: relative;
     }
+    .swiper {
+      width: 750px;
+      height: 640px;
+    }
     .rive-canvas {
       width: 750px;
       height: 640px;
+      background-color: transparent;
+    }
+    .background-canvas {
       position: absolute;
-      top: 46%;
+      top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      background-color: transparent;
+      z-index: -1;
     }
   </style>
 </head>
 <body>
-  <canvas id="canvas1" class="rive-canvas"></canvas>
+  <canvas id="backgroundCanvas" class="rive-canvas background-canvas"></canvas>
+  <div class="swiper">
+    <div class="swiper-wrapper">
+      <div class="swiper-slide">
+        <canvas id="canvas1" class="rive-canvas"></canvas>
+      </div>
+      <div class="swiper-slide">
+        <canvas id="canvas2" class="rive-canvas"></canvas>
+      </div>
+    </div>
+  </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
   <script src="https://unpkg.com/@rive-app/canvas"></script>
   <script>
-    let r1;
+    let r1, r2, bg;
 
     const initRive = () => {
+      bg = new rive.Rive({
+        src: "krisha_plus_onboarding_v1.riv",
+        canvas: document.getElementById("backgroundCanvas"),
+        autoplay: true,
+        artboard: "BG",
+        stateMachines: "State Machine 1",
+        onLoad: () => {
+          bg.resizeDrawingSurfaceToCanvas();
+        },
+      });
+
       r1 = new rive.Rive({
         src: "krisha_plus_onboarding_v1.riv",
         canvas: document.getElementById("canvas1"),
         autoplay: true,
-        // Animation: "Loading Animation",
         artboard: "Artboard",
         stateMachines: "State Machine 1",
         onLoad: () => {
           r1.resizeDrawingSurfaceToCanvas();
         },
       });
+
+      r2 = new rive.Rive({
+        src: "krisha_plus_onboarding_v1.riv",
+        canvas: document.getElementById("canvas2"),
+        autoplay: true,
+        artboard: "Artboard 2",
+        stateMachines: "State Machine 2",
+        onLoad: () => {
+          r2.resizeDrawingSurfaceToCanvas();
+        },
+      });
     };
+
+    const swiper = new Swiper('.swiper', {
+      direction: 'horizontal',
+      loop: false,
+      on: {
+      slideChange: function () {
+        if (this.activeIndex === 0) {
+          r1.reset({
+            artboard: "Artboard",
+            stateMachines: "State Machine 1",
+            autoplay: true,
+          });
+          r1.play();
+        } else if (this.activeIndex === 1) {
+          r2.reset({
+            artboard: "Artboard 2",
+            stateMachines: "State Machine 2",
+            autoplay: true,
+          });
+          r2.play();
+        }
+      },
+      },
+    });
+
     window.addEventListener("load", initRive);
   </script>
 </body>
