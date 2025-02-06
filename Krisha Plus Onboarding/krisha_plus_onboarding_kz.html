@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Krisha Plus Onboarding</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: rgb(255, 255, 255);
+      position: relative;
+    }
+    .swiper {
+      width: 375px;
+      height: 320px;
+    }
+    .rive-canvas {
+      width: 375px;
+      height: 320px;
+      background-color: transparent;
+    }
+    .background-canvas {
+      background-image: url('BG.svg');
+      background-position: center;
+      position: absolute;
+      z-index: -1;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="backgroundCanvas" class="rive-canvas background-canvas"></canvas>
+  <div class="swiper">
+    <div class="swiper-wrapper">
+      <div class="swiper-slide">
+        <canvas id="canvas1" class="rive-canvas"></canvas>
+      </div>
+      <div class="swiper-slide">
+        <canvas id="canvas2" class="rive-canvas"></canvas>
+      </div>
+      <div class="swiper-slide">
+        <canvas id="canvas3" class="rive-canvas"></canvas>
+      </div>
+      <div class="swiper-slide">
+        <canvas id="canvas4" class="rive-canvas"></canvas>
+      </div>
+      <div class="swiper-slide">
+        <canvas id="canvas5" class="rive-canvas"></canvas>
+      </div>
+    </div>
+    <!-- Add pagination -->
+    </div>
+    </div>
+    <div class="swiper-pagination" style="position: fixed; bottom: 20px;"></div>
+
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+  <script src="https://unpkg.com/@rive-app/canvas"></script>
+  <script>
+    let r1, r2, r3, r4, r5;
+
+    const initRive = () => {
+      r1 = new rive.Rive({
+        src: "krisha_plus_onboarding_kz.riv",
+        canvas: document.getElementById("canvas1"),
+        autoplay: true,
+        artboard: "Artboard 1",
+        stateMachines: "State Machine",
+        onLoad: () => {
+          r1.resizeDrawingSurfaceToCanvas();
+        },
+      });
+
+      r2 = new rive.Rive({
+        src: "krisha_plus_onboarding_kz.riv",
+        canvas: document.getElementById("canvas2"),
+        autoplay: true,
+        artboard: "Artboard 2",
+        stateMachines: "State Machine",
+        onLoad: () => {
+          r2.resizeDrawingSurfaceToCanvas();
+        },
+      });
+
+      r3 = new rive.Rive({
+        src: "krisha_plus_onboarding_kz.riv",
+        canvas: document.getElementById("canvas3"),
+        autoplay: true,
+        artboard: "Artboard 3",
+        stateMachines: "State Machine",
+        onLoad: () => {
+          r3.resizeDrawingSurfaceToCanvas();
+        },
+      });
+
+      r4 = new rive.Rive({
+        src: "krisha_plus_onboarding_kz.riv",
+        canvas: document.getElementById("canvas4"),
+        autoplay: true,
+        artboard: "Artboard 4",
+        stateMachines: "State Machine",
+        onLoad: () => {
+          r4.resizeDrawingSurfaceToCanvas();
+        },
+      });
+
+      r5 = new rive.Rive({
+        src: "krisha_plus_onboarding_kz.riv",
+        canvas: document.getElementById("canvas5"),
+        autoplay: true,
+        artboard: "Artboard 5",
+        stateMachines: "State Machine",
+        onLoad: () => {
+          r5.resizeDrawingSurfaceToCanvas();
+        },
+      });
+    };
+
+    const swiper = new Swiper('.swiper', {
+      direction: 'horizontal',
+      loop: false,
+      pagination: {
+        el: '.swiper-pagination',
+        clickable: true
+      },
+      on: {
+        slideChange: function () {
+          switch(this.activeIndex) {
+            case 0:
+              r1.reset({ artboard: "Artboard 1", stateMachines: "State Machine", autoplay: true });
+              r1.play();
+              break;
+            case 1:
+              r2.reset({ artboard: "Artboard 2", stateMachines: "State Machine", autoplay: true });
+              r2.play();
+              break;
+            case 2:
+              r3.reset({ artboard: "Artboard 3", stateMachines: "State Machine", autoplay: true });
+              r3.play();
+              break;
+            case 3:
+              r4.reset({ artboard: "Artboard 4", stateMachines: "State Machine", autoplay: true });
+              r4.play();
+              break;
+            case 4:
+              r5.reset({ artboard: "Artboard 5", stateMachines: "State Machine", autoplay: true });
+              r5.play();
+              break;
+          }
+        },
+      },
+    });
+
+    window.addEventListener("load", initRive);
+  </script>
+</body>
+</html>
