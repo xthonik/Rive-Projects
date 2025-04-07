@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Анимация лайка в Kolesa.kz RC</title>
+  <style>
+    body {
+      margin: 0;
+      background-color: rgb(255, 255, 255);
+      min-height: 100vh;
+    }
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      padding: 20px;
+      height: 100%;
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+    .canvas-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 10px;
+    }
+    .rive-canvas {
+      width: 100%;
+      max-width: 200px;
+      aspect-ratio: 1;
+      background-color: rgb(233, 233, 233);
+      border-radius: 8px;
+    }
+    .canvas-label {
+      margin-top: 10px;
+      font-size: 14px;
+      text-align: center;
+    }
+
+    @media (max-width: 768px) {
+      .grid-container {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        padding: 10px;
+      }
+      .rive-canvas {
+        max-width: 150px;
+      }
+      .canvas-label {
+        font-size: 12px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .grid-container {
+        grid-template-columns: repeat(1, 1fr);
+      }
+      .rive-canvas {
+        max-width: 200px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="grid-container">
+    <div class="canvas-container">
+      <canvas id="canvas1" class="rive-canvas"></canvas>
+      <div class="canvas-label">Listing Not Liked</div>
+    </div>
+    <div class="canvas-container">
+      <canvas id="canvas2" class="rive-canvas"></canvas>
+      <div class="canvas-label">Listing Liked</div>
+    </div>
+    <div class="canvas-container">
+      <canvas id="canvas3" class="rive-canvas"></canvas>
+      <div class="canvas-label">Page Not Liked</div>
+    </div>
+    <div class="canvas-container">
+      <canvas id="canvas4" class="rive-canvas"></canvas>
+      <div class="canvas-label">Page Liked</div>
+    </div>
+    <div class="canvas-container">
+      <canvas id="canvas5" class="rive-canvas"></canvas>
+      <div class="canvas-label">Listing Not Liked Plus</div>
+    </div>
+    <div class="canvas-container">
+      <canvas id="canvas6" class="rive-canvas"></canvas>
+      <div class="canvas-label">Listing Liked Plus</div>
+    </div>
+    <div class="canvas-container">
+      <canvas id="canvas7" class="rive-canvas"></canvas>
+      <div class="canvas-label">Page Not Liked Plus</div>
+    </div>
+    <div class="canvas-container">
+      <canvas id="canvas8" class="rive-canvas"></canvas>
+      <div class="canvas-label">Page Liked Plus</div>
+    </div>
+    <div class="canvas-container">
+      <canvas id="canvas9" class="rive-canvas"></canvas>
+      <div class="canvas-label">Recs Not Liked</div>
+    </div>
+    <div class="canvas-container">
+      <canvas id="canvas10" class="rive-canvas"></canvas>
+      <div class="canvas-label">Recs Liked</div>
+    </div>
+  </div>
+  <script src="https://unpkg.com/@rive-app/webgl2@latest"></script>
+  <script>
+    const animations = {
+      listing_not_liked_entry: (inputs) => {
+        inputs.forEach(input => {
+          if (input.name === 'liked_entry') input.value = false;
+          if (input.name === 'plus') input.value = false;
+          if (input.name === 'recs') input.value = false;
+          if (input.name === 'page') input.value = false;
+        });
+      },
+      listing_liked_entry: (inputs) => {
+        inputs.forEach(input => {
+          if (input.name === 'liked_entry') input.value = true;
+          if (input.name === 'plus') input.value = false;
+          if (input.name === 'recs') input.value = false;
+          if (input.name === 'page') input.value = false;
+        });
+      },
+      page_not_liked_entry: (inputs) => {
+        inputs.forEach(input => {
+          if (input.name === 'liked_entry') input.value = false;
+          if (input.name === 'plus') input.value = false;
+          if (input.name === 'recs') input.value = false;
+          if (input.name === 'page') input.value = true;
+        });
+      },
+      page_liked_entry: (inputs) => {
+        inputs.forEach(input => {
+          if (input.name === 'liked_entry') input.value = true;
+          if (input.name === 'plus') input.value = false;
+          if (input.name === 'recs') input.value = false;
+          if (input.name === 'page') input.value = true;
+        });
+      },
+      listing_not_liked_entry_plus: (inputs) => {
+        inputs.forEach(input => {
+          if (input.name === 'liked_entry') input.value = false;
+          if (input.name === 'plus') input.value = true;
+          if (input.name === 'recs') input.value = false;
+          if (input.name === 'page') input.value = false;
+        });
+      },
+      listing_liked_entry_plus: (inputs) => {
+        inputs.forEach(input => {
+          if (input.name === 'liked_entry') input.value = true;
+          if (input.name === 'plus') input.value = true;
+          if (input.name === 'recs') input.value = false;
+          if (input.name === 'page') input.value = false;
+        });
+      },
+      page_not_liked_entry_plus: (inputs) => {
+        inputs.forEach(input => {
+          if (input.name === 'liked_entry') input.value = false;
+          if (input.name === 'plus') input.value = true;
+          if (input.name === 'recs') input.value = false;
+          if (input.name === 'page') input.value = true;
+        });
+      },
+      page_liked_entry_plus: (inputs) => {
+        inputs.forEach(input => {
+          if (input.name === 'liked_entry') input.value = true;
+          if (input.name === 'plus') input.value = true;
+          if (input.name === 'recs') input.value = false;
+          if (input.name === 'page') input.value = true;
+        });
+      },
+      recs_not_liked_entry: (inputs) => {
+        inputs.forEach(input => {
+          if (input.name === 'liked_entry') input.value = false;
+          if (input.name === 'plus') input.value = false;
+          if (input.name === 'recs') input.value = true;
+          if (input.name === 'page') input.value = false;
+        });
+      },
+      recs_liked_entry: (inputs) => {
+        inputs.forEach(input => {
+          if (input.name === 'liked_entry') input.value = true;
+          if (input.name === 'plus') input.value = false;
+          if (input.name === 'recs') input.value = true;
+          if (input.name === 'page') input.value = false;
+        });
+      }
+    };
+
+    const createRiveInstance = (canvasId, animationFunc) => {
+      const canvas = document.getElementById(canvasId);
+      let riveInstance = null;
+
+      try {
+        riveInstance = new rive.Rive({
+          canvas: canvas,
+          src: 'like_rc4.riv',
+          artboard: 'like',
+          stateMachines: ['like'],
+          autoplay: true,
+          onLoad: () => {
+            console.log(`${canvasId} loaded`);
+            const inputs = riveInstance.stateMachineInputs('like');
+            animationFunc(inputs);
+            riveInstance.resizeDrawingSurfaceToCanvas();
+          },
+          onError: (err) => {
+            console.error(`Error loading ${canvasId}:`, err);
+          }
+        });
+      } catch (error) {
+        console.error(`Error creating instance for ${canvasId}:`, error);
+      }
+
+      return riveInstance;
+    };
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const instances = [
+        createRiveInstance('canvas1', animations.listing_not_liked_entry),
+        createRiveInstance('canvas2', animations.listing_liked_entry),
+        createRiveInstance('canvas3', animations.page_not_liked_entry),
+        createRiveInstance('canvas4', animations.page_liked_entry),
+        createRiveInstance('canvas5', animations.listing_not_liked_entry_plus),
+        createRiveInstance('canvas6', animations.listing_liked_entry_plus),
+        createRiveInstance('canvas7', animations.page_not_liked_entry_plus),
+        createRiveInstance('canvas8', animations.page_liked_entry_plus),
+        createRiveInstance('canvas9', animations.recs_not_liked_entry),
+        createRiveInstance('canvas10', animations.recs_liked_entry)
+      ];
+    });
+  </script>
+</body>
+</html>
