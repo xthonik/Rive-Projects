@@ -196,19 +196,32 @@
     const createRiveInstance = (canvasId, animationFunc) => {
       const canvas = document.getElementById(canvasId);
       let riveInstance = null;
+      let inputsRef = null;
 
       try {
         riveInstance = new rive.Rive({
           canvas: canvas,
-          src: 'like_rc4.riv',
+          src: 'like_rc6.riv',
           artboard: 'like',
           stateMachines: ['like'],
           autoplay: true,
           onLoad: () => {
             console.log(`${canvasId} loaded`);
-            const inputs = riveInstance.stateMachineInputs('like');
-            animationFunc(inputs);
+            inputsRef = riveInstance.stateMachineInputs('like');
+            animationFunc(inputsRef);
             riveInstance.resizeDrawingSurfaceToCanvas();
+
+            // Add click handler to the canvas container
+            canvas.parentElement.addEventListener('click', () => {
+              inputsRef.forEach(input => {
+                if (input.name === 'fire_animation') {
+                  input.fire();
+                }
+              });
+            });
+
+            // Add pointer cursor
+            canvas.parentElement.style.cursor = 'pointer';
           },
           onError: (err) => {
             console.error(`Error loading ${canvasId}:`, err);
