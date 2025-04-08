@@ -220,13 +220,28 @@
               });
             });
 
-            // Add pointer cursor
             canvas.parentElement.style.cursor = 'pointer';
           },
-          onError: (err) => {
-            console.error(`Error loading ${canvasId}:`, err);
+          // Add event handling
+          onStateChange: (event) => {
+            console.log(`${canvasId} state changed:`, event);
+          },
+          onPlay: () => {
+            console.log(`${canvasId} animation started playing`);
+          },
+          onPause: () => {
+            console.log(`${canvasId} animation paused`);
+          },
+          onStop: () => {
+            console.log(`${canvasId} animation stopped`);
           }
         });
+
+        // Subscribe to general Rive events
+        riveInstance.on('general', (event) => {
+          console.log(`${canvasId} general event:`, event);
+        });
+
       } catch (error) {
         console.error(`Error creating instance for ${canvasId}:`, error);
       }
