@@ -3,37 +3,54 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Анимация лайка в Kolesa.kz RC</title>
+  <title>Анимация лайка в Kolesa.kz RC ('liked'/'unliked')</title>
   <link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     body {
       margin: 0;
       background-color: rgb(255, 255, 255);
       min-height: 100vh;
-      font-family: 'Golos Text', sans-serif;
+      font-family: 'Golos Text', sans-serif; /* Apply custom font */
+    }
+    /* Style for the event visualizer */
+    #event-visualizer {
+        padding: 15px 20px;
+        margin: 10px 20px;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        background-color: #f8f8f8;
+        text-align: center;
+        font-size: 16px;
+        font-weight: 500;
+        color: #333;
+        max-width: 1600px; /* Match grid max-width */
+        margin-left: auto; /* Center the visualizer */
+        margin-right: auto;
+        transition: background-color 0.2s ease-in-out; /* Smooth background transition */
     }
     .grid-container {
       display: grid;
+      /* Create responsive columns: minimum 200px, maximum 1fr */
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 20px;
+      gap: 20px; /* Spacing between grid items */
       padding: 20px;
       height: 100%;
-      max-width: 1600px;
-      margin: 0 auto;
+      max-width: 1600px; /* Limit maximum width */
+      margin: 0 auto; /* Center the grid */
     }
     .canvas-container {
       display: flex;
       flex-direction: column;
-      align-items: center;
-      justify-content: center;
+      align-items: center; /* Center canvas and label horizontally */
+      justify-content: center; /* Center content vertically (if container has height) */
       padding: 10px;
     }
     .rive-canvas {
-      width: 100%;
-      max-width: 200px;
-      aspect-ratio: 1;
-      background-color: rgb(231, 232, 239);
-      border-radius: 8px;
+      width: 100%; /* Make canvas fill container width */
+      max-width: 200px; /* Limit maximum canvas size */
+      aspect-ratio: 1; /* Maintain square aspect ratio */
+      background-color: rgb(231, 232, 239); /* Light grey background */
+      border-radius: 8px; /* Rounded corners */
     }
     .canvas-label {
       margin-top: 10px;
@@ -41,227 +58,175 @@
       text-align: center;
     }
 
+    /* Responsive adjustments */
     @media (max-width: 768px) {
-      .grid-container {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
-        padding: 10px;
-      }
-      .rive-canvas {
-        max-width: 150px;
-      }
-      .canvas-label {
-        font-size: 12px;
-      }
+      .grid-container { grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 10px; }
+      .rive-canvas { max-width: 150px; }
+      .canvas-label { font-size: 12px; }
+      #event-visualizer { margin: 10px; padding: 10px 15px; font-size: 14px; }
     }
-
     @media (max-width: 480px) {
-      .grid-container {
-        grid-template-columns: repeat(1, 1fr);
-      }
-      .rive-canvas {
-        max-width: 200px;
-      }
+      .grid-container { grid-template-columns: repeat(1, 1fr); }
+      .rive-canvas { max-width: 200px; }
     }
   </style>
 </head>
 <body>
+  <div id="event-visualizer">Last event: None</div>
+
   <div class="grid-container">
-    <div class="canvas-container">
-      <canvas id="canvas1" class="rive-canvas"></canvas>
-      <div class="canvas-label">Listing Not Liked</div>
-    </div>
-    <div class="canvas-container">
-      <canvas id="canvas2" class="rive-canvas"></canvas>
-      <div class="canvas-label">Listing Liked</div>
-    </div>
-    <div class="canvas-container">
-      <canvas id="canvas3" class="rive-canvas"></canvas>
-      <div class="canvas-label">Page Not Liked</div>
-    </div>
-    <div class="canvas-container">
-      <canvas id="canvas4" class="rive-canvas"></canvas>
-      <div class="canvas-label">Page Liked</div>
-    </div>
-    <div class="canvas-container">
-      <canvas id="canvas5" class="rive-canvas"></canvas>
-      <div class="canvas-label">Listing Not Liked Plus</div>
-    </div>
-    <div class="canvas-container">
-      <canvas id="canvas6" class="rive-canvas"></canvas>
-      <div class="canvas-label">Listing Liked Plus</div>
-    </div>
-    <div class="canvas-container">
-      <canvas id="canvas7" class="rive-canvas"></canvas>
-      <div class="canvas-label">Page Not Liked Plus</div>
-    </div>
-    <div class="canvas-container">
-      <canvas id="canvas8" class="rive-canvas"></canvas>
-      <div class="canvas-label">Page Liked Plus</div>
-    </div>
-    <div class="canvas-container">
-      <canvas id="canvas9" class="rive-canvas"></canvas>
-      <div class="canvas-label">Recs Not Liked</div>
-    </div>
-    <div class="canvas-container">
-      <canvas id="canvas10" class="rive-canvas"></canvas>
-      <div class="canvas-label">Recs Liked</div>
-    </div>
+    <div class="canvas-container"> <canvas id="canvas1" class="rive-canvas"></canvas> <div class="canvas-label">Listing Not Liked</div> </div>
+    <div class="canvas-container"> <canvas id="canvas2" class="rive-canvas"></canvas> <div class="canvas-label">Listing Liked</div> </div>
+    <div class="canvas-container"> <canvas id="canvas3" class="rive-canvas"></canvas> <div class="canvas-label">Page Not Liked</div> </div>
+    <div class="canvas-container"> <canvas id="canvas4" class="rive-canvas"></canvas> <div class="canvas-label">Page Liked</div> </div>
+    <div class="canvas-container"> <canvas id="canvas5" class="rive-canvas"></canvas> <div class="canvas-label">Listing Not Liked Plus</div> </div>
+    <div class="canvas-container"> <canvas id="canvas6" class="rive-canvas"></canvas> <div class="canvas-label">Listing Liked Plus</div> </div>
+    <div class="canvas-container"> <canvas id="canvas7" class="rive-canvas"></canvas> <div class="canvas-label">Page Not Liked Plus</div> </div>
+    <div class="canvas-container"> <canvas id="canvas8" class="rive-canvas"></canvas> <div class="canvas-label">Page Liked Plus</div> </div>
+    <div class="canvas-container"> <canvas id="canvas9" class="rive-canvas"></canvas> <div class="canvas-label">Recs Not Liked</div> </div>
+    <div class="canvas-container"> <canvas id="canvas10" class="rive-canvas"></canvas> <div class="canvas-label">Recs Liked</div> </div>
   </div>
+
   <script src="https://unpkg.com/@rive-app/webgl2@latest"></script>
   <script>
-    const animations = {
-      listing_not_liked_entry: (inputs) => {
-        inputs.forEach(input => {
-          if (input.name === 'liked_entry') input.value = false;
-          if (input.name === 'plus') input.value = false;
-          if (input.name === 'recs') input.value = false;
-          if (input.name === 'page') input.value = false;
-        });
-      },
-      listing_liked_entry: (inputs) => {
-        inputs.forEach(input => {
-          if (input.name === 'liked_entry') input.value = true;
-          if (input.name === 'plus') input.value = false;
-          if (input.name === 'recs') input.value = false;
-          if (input.name === 'page') input.value = false;
-        });
-      },
-      page_not_liked_entry: (inputs) => {
-        inputs.forEach(input => {
-          if (input.name === 'liked_entry') input.value = false;
-          if (input.name === 'plus') input.value = false;
-          if (input.name === 'recs') input.value = false;
-          if (input.name === 'page') input.value = true;
-        });
-      },
-      page_liked_entry: (inputs) => {
-        inputs.forEach(input => {
-          if (input.name === 'liked_entry') input.value = true;
-          if (input.name === 'plus') input.value = false;
-          if (input.name === 'recs') input.value = false;
-          if (input.name === 'page') input.value = true;
-        });
-      },
-      listing_not_liked_entry_plus: (inputs) => {
-        inputs.forEach(input => {
-          if (input.name === 'liked_entry') input.value = false;
-          if (input.name === 'plus') input.value = true;
-          if (input.name === 'recs') input.value = false;
-          if (input.name === 'page') input.value = false;
-        });
-      },
-      listing_liked_entry_plus: (inputs) => {
-        inputs.forEach(input => {
-          if (input.name === 'liked_entry') input.value = true;
-          if (input.name === 'plus') input.value = true;
-          if (input.name === 'recs') input.value = false;
-          if (input.name === 'page') input.value = false;
-        });
-      },
-      page_not_liked_entry_plus: (inputs) => {
-        inputs.forEach(input => {
-          if (input.name === 'liked_entry') input.value = false;
-          if (input.name === 'plus') input.value = true;
-          if (input.name === 'recs') input.value = false;
-          if (input.name === 'page') input.value = true;
-        });
-      },
-      page_liked_entry_plus: (inputs) => {
-        inputs.forEach(input => {
-          if (input.name === 'liked_entry') input.value = true;
-          if (input.name === 'plus') input.value = true;
-          if (input.name === 'recs') input.value = false;
-          if (input.name === 'page') input.value = true;
-        });
-      },
-      recs_not_liked_entry: (inputs) => {
-        inputs.forEach(input => {
-          if (input.name === 'liked_entry') input.value = false;
-          if (input.name === 'plus') input.value = false;
-          if (input.name === 'recs') input.value = true;
-          if (input.name === 'page') input.value = false;
-        });
-      },
-      recs_liked_entry: (inputs) => {
-        inputs.forEach(input => {
-          if (input.name === 'liked_entry') input.value = true;
-          if (input.name === 'plus') input.value = false;
-          if (input.name === 'recs') input.value = true;
-          if (input.name === 'page') input.value = false;
-        });
-      }
+    const eventVisualizer = document.getElementById('event-visualizer');
+
+    /**
+     * Updates the event visualizer display ONLY for 'liked' and 'unliked' events.
+     * @param {string} canvasId - The ID of the canvas that fired the event.
+     * @param {string} eventName - The name of the Rive event ('liked' or 'unliked').
+     */
+    const updateEventVisualizer = (canvasId, eventName) => {
+        if (eventVisualizer) {
+            const lowerCaseEventName = eventName.toLowerCase(); // Ensure case-insensitivity
+            eventVisualizer.textContent = `Last RiveEvent: '${eventName}' from ${canvasId}`;
+            // *** UPDATED: Check for 'liked' to set background color ***
+            eventVisualizer.style.backgroundColor = lowerCaseEventName === 'liked' ? '#d4edda' : '#f8d7da';
+            setTimeout(() => {
+                if (eventVisualizer) eventVisualizer.style.backgroundColor = '#f8f8f8';
+            }, 500);
+        }
+    };
+
+    const animations = { /* ... animation setup functions remain the same ... */
+        listing_not_liked_entry: (inputs) => { inputs.forEach(input => { if (input.name === 'liked_entry') input.value = false; if (input.name === 'plus') input.value = false; if (input.name === 'recs') input.value = false; if (input.name === 'page') input.value = false; }); },
+        listing_liked_entry: (inputs) => { inputs.forEach(input => { if (input.name === 'liked_entry') input.value = true; if (input.name === 'plus') input.value = false; if (input.name === 'recs') input.value = false; if (input.name === 'page') input.value = false; }); },
+        page_not_liked_entry: (inputs) => { inputs.forEach(input => { if (input.name === 'liked_entry') input.value = false; if (input.name === 'plus') input.value = false; if (input.name === 'recs') input.value = false; if (input.name === 'page') input.value = true; }); },
+        page_liked_entry: (inputs) => { inputs.forEach(input => { if (input.name === 'liked_entry') input.value = true; if (input.name === 'plus') input.value = false; if (input.name === 'recs') input.value = false; if (input.name === 'page') input.value = true; }); },
+        listing_not_liked_entry_plus: (inputs) => { inputs.forEach(input => { if (input.name === 'liked_entry') input.value = false; if (input.name === 'plus') input.value = true; if (input.name === 'recs') input.value = false; if (input.name === 'page') input.value = false; }); },
+        listing_liked_entry_plus: (inputs) => { inputs.forEach(input => { if (input.name === 'liked_entry') input.value = true; if (input.name === 'plus') input.value = true; if (input.name === 'recs') input.value = false; if (input.name === 'page') input.value = false; }); },
+        page_not_liked_entry_plus: (inputs) => { inputs.forEach(input => { if (input.name === 'liked_entry') input.value = false; if (input.name === 'plus') input.value = true; if (input.name === 'recs') input.value = false; if (input.name === 'page') input.value = true; }); },
+        page_liked_entry_plus: (inputs) => { inputs.forEach(input => { if (input.name === 'liked_entry') input.value = true; if (input.name === 'plus') input.value = true; if (input.name === 'recs') input.value = false; if (input.name === 'page') input.value = true; }); },
+        recs_not_liked_entry: (inputs) => { inputs.forEach(input => { if (input.name === 'liked_entry') input.value = false; if (input.name === 'plus') input.value = false; if (input.name === 'recs') input.value = true; if (input.name === 'page') input.value = false; }); },
+        recs_liked_entry: (inputs) => { inputs.forEach(input => { if (input.name === 'liked_entry') input.value = true; if (input.name === 'plus') input.value = false; if (input.name === 'recs') input.value = true; if (input.name === 'page') input.value = false; }); }
     };
 
     const createRiveInstance = (canvasId, animationFunc) => {
       const canvas = document.getElementById(canvasId);
+      if (!canvas) { console.error(`Canvas element with ID ${canvasId} not found.`); return null; }
+
       let riveInstance = null;
       let inputsRef = null;
 
       try {
         riveInstance = new rive.Rive({
           canvas: canvas,
-          src: 'like_rc6.riv',
+          src: 'https://raw.githubusercontent.com/xthonik/Rive-Projects/main/Kolesa%20Like/like_rc6.riv',
           artboard: 'like',
           stateMachines: ['like'],
           autoplay: true,
           onLoad: () => {
-            console.log(`${canvasId} loaded`);
+            console.log(`[${canvasId}] Rive file loaded.`);
             inputsRef = riveInstance.stateMachineInputs('like');
-            animationFunc(inputsRef);
+            if (inputsRef) animationFunc(inputsRef);
+            else console.error(`[${canvasId}] State machine 'like' not found or has no inputs.`);
             riveInstance.resizeDrawingSurfaceToCanvas();
 
-            // Add click handler to the canvas container
-            canvas.parentElement.addEventListener('click', () => {
-              inputsRef.forEach(input => {
-                if (input.name === 'fire_animation') {
-                  input.fire();
+            if (canvas.parentElement) {
+                canvas.parentElement.addEventListener('click', () => {
+                    if (inputsRef) {
+                        inputsRef.forEach(input => {
+                            if (input.name === 'fire_animation' && input.fire) {
+                                input.fire();
+                                console.log(`[${canvasId}] 'fire_animation' input triggered.`);
+                            }
+                        });
+                    }
+                });
+                canvas.parentElement.style.cursor = 'pointer';
+            }
+
+            // *** EVENT LISTENER SETUP - USING RiveEvent ***
+            try {
+                if (rive && rive.EventType && rive.EventType.RiveEvent) {
+                    console.log(`[${canvasId}] Subscribing using rive.EventType.RiveEvent.`);
+                    riveInstance.on(rive.EventType.RiveEvent, (event) => {
+                        console.log(`[${canvasId}] Raw Rive Event Received:`, event); // Keep for debug
+
+                        // Check the data structure
+                        if (event.data && typeof event.data.name === 'string') {
+                            const eventName = event.data.name;
+                            console.log(`[${canvasId}] Processing RiveEvent with name: ${eventName}`);
+
+                            // *** UPDATED: Check for 'liked' or 'unliked' (case-insensitive) ***
+                            const lowerCaseEventName = eventName.toLowerCase();
+                            if (lowerCaseEventName === 'liked' || lowerCaseEventName === 'unliked') {
+                                updateEventVisualizer(canvasId, eventName); // Pass original name for display
+                            } else {
+                                console.log(`[${canvasId}] Ignoring RiveEvent: ${eventName} (Not 'liked' or 'unliked')`);
+                            }
+                        } else {
+                           console.warn(`[${canvasId}] Received RiveEvent missing data.name property.`);
+                        }
+                    });
+                } else {
+                    console.warn(`[${canvasId}] rive.EventType.RiveEvent not found. Cannot subscribe to custom events this way.`);
+                     // Optional Fallback
+                     if (rive && rive.EventType && rive.EventType.General) {
+                        console.warn(`[${canvasId}] Falling back to subscribing with rive.EventType.General.`);
+                         riveInstance.on(rive.EventType.General, (event) => {
+                            console.log(`[${canvasId}] Fallback General Event Received:`, event);
+                            if (event.data && typeof event.data.name === 'string') {
+                                const lowerCaseEventName = event.data.name.toLowerCase();
+                                if (lowerCaseEventName === 'liked' || lowerCaseEventName === 'unliked') {
+                                     updateEventVisualizer(canvasId, event.data.name);
+                                }
+                            }
+                         });
+                     }
                 }
-              });
-            });
-
-            canvas.parentElement.style.cursor = 'pointer';
+                // StateChange listener remains commented out
+            } catch (e) {
+                console.error(`[${canvasId}] Error setting up event listeners -`, e);
+            }
           },
-          // Add event handling
-          onStateChange: (event) => {
-            console.log(`${canvasId} state changed:`, event);
+          onLoadError: (error) => { /* ... error handling ... */
+            console.error(`Error loading Rive file for ${canvasId}:`, error);
+            if (canvas.parentElement) {
+                const errorDiv = document.createElement('div');
+                errorDiv.textContent = 'Error loading animation.';
+                errorDiv.style.color = 'red'; errorDiv.style.fontSize = '12px'; errorDiv.style.marginTop = '5px';
+                if (!canvas.parentElement.querySelector('.error-message')) { errorDiv.classList.add('error-message'); canvas.parentElement.appendChild(errorDiv); }
+            }
           },
-          onPlay: () => {
-            console.log(`${canvasId} animation started playing`);
-          },
-          onPause: () => {
-            console.log(`${canvasId} animation paused`);
-          },
-          onStop: () => {
-            console.log(`${canvasId} animation stopped`);
-          }
         });
-
-        // Subscribe to general Rive events
-        riveInstance.on('general', (event) => {
-          console.log(`${canvasId} general event:`, event);
-        });
-
       } catch (error) {
-        console.error(`Error creating instance for ${canvasId}:`, error);
+        console.error(`Error creating Rive instance for ${canvasId}:`, error);
       }
-
       return riveInstance;
     };
 
     window.addEventListener('DOMContentLoaded', () => {
-      const instances = [
-        createRiveInstance('canvas1', animations.listing_not_liked_entry),
-        createRiveInstance('canvas2', animations.listing_liked_entry),
-        createRiveInstance('canvas3', animations.page_not_liked_entry),
-        createRiveInstance('canvas4', animations.page_liked_entry),
-        createRiveInstance('canvas5', animations.listing_not_liked_entry_plus),
-        createRiveInstance('canvas6', animations.listing_liked_entry_plus),
-        createRiveInstance('canvas7', animations.page_not_liked_entry_plus),
-        createRiveInstance('canvas8', animations.page_liked_entry_plus),
-        createRiveInstance('canvas9', animations.recs_not_liked_entry),
-        createRiveInstance('canvas10', animations.recs_liked_entry)
+      if (typeof rive === 'undefined') {
+          console.error("FATAL: Rive script failed to load or 'rive' object is not defined globally.");
+          if (eventVisualizer) { eventVisualizer.textContent = "Error: Rive library failed to load."; eventVisualizer.style.backgroundColor = '#f8d7da'; }
+          return;
+      }
+      console.log("DOM loaded. Initializing Rive instances...");
+      const instances = [ /* ... instance creation ... */
+        createRiveInstance('canvas1', animations.listing_not_liked_entry), createRiveInstance('canvas2', animations.listing_liked_entry), createRiveInstance('canvas3', animations.page_not_liked_entry), createRiveInstance('canvas4', animations.page_liked_entry), createRiveInstance('canvas5', animations.listing_not_liked_entry_plus), createRiveInstance('canvas6', animations.listing_liked_entry_plus), createRiveInstance('canvas7', animations.page_not_liked_entry_plus), createRiveInstance('canvas8', animations.page_liked_entry_plus), createRiveInstance('canvas9', animations.recs_not_liked_entry), createRiveInstance('canvas10', animations.recs_liked_entry)
       ];
+      console.log("Rive instances creation process finished.");
     });
   </script>
 </body>
