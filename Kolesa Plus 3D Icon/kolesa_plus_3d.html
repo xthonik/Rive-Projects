@@ -27,12 +27,19 @@
     }
     .rive-canvas {
       width: 100vw;
-      height: 100vh;
+      height: 100vh; /* fallback for desktop */
       max-width: 100vw;
       max-height: 100vh;
       display: block;
       position: relative;
       background-color: transparent;
+      /* Remove fixed vh sizing on mobile, rely on JS */
+    }
+    @media (max-width: 800px) {
+      .rive-canvas {
+        height: auto;
+        min-height: 0;
+      }
     }
   </style>
 </head>
@@ -43,16 +50,20 @@
   <script>
     function resizeCanvas() {
       const canvas = document.getElementById("canvas1");
-      canvas.width = window.innerWidth * window.devicePixelRatio;
-      canvas.height = window.innerHeight * window.devicePixelRatio;
-      canvas.style.width = window.innerWidth + "px";
-      canvas.style.height = window.innerHeight + "px";
+      // Use innerHeight for mobile browsers to avoid black bars
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      canvas.width = width * window.devicePixelRatio;
+      canvas.height = height * window.devicePixelRatio;
+      canvas.style.width = width + "px";
+      canvas.style.height = height + "px";
       if (window.riveInstance) {
         window.riveInstance.resizeDrawingSurfaceToCanvas();
       }
     }
     window.addEventListener('resize', resizeCanvas);
     window.addEventListener('orientationchange', resizeCanvas);
+    window.addEventListener('DOMContentLoaded', resizeCanvas);
     const r = new rive.Rive({
         src: "demo.riv",
         canvas: document.getElementById("canvas1"),
