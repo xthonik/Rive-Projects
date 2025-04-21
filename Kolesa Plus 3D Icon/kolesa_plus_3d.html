@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Анимация истории загрузки авто</title>
+  <title>Kolesa PLus 3D Icon</title>
   <style>
     body {
       display: flex;
@@ -14,15 +14,9 @@
       background-color: black;
       position: relative;
     }
-    .background-canvas {
-      width: 360px;
-      height: 700px;
-      background: url('ui.png') no-repeat center center;
-      background-size: cover;
-    }
     .rive-canvas {
-      width: 150px;
-      height: 150px;
+      width: 360px;
+      height: 757px;
       position: absolute;
       top: 46%;
       left: 50%;
@@ -32,17 +26,16 @@
   </style>
 </head>
 <body>
-  <canvas id="canvas2" class="background-canvas"></canvas>
   <canvas id="canvas1" class="rive-canvas"></canvas>
 
-  <script src="https://unpkg.com/@rive-app/canvas@latest"></script>
+  <script src="https://unpkg.com/@rive-app/webgl2@latest"></script>
   <script>
     const r = new rive.Rive({
-        src: "scanner.riv",
+        src: "demo.riv",
         canvas: document.getElementById("canvas1"),
         autoplay: true,
-        artboard: "Artboard",
-        stateMachines: "State Machine",
+        artboard: "Demo",
+        stateMachines: "Demo",
         onLoad: () => {
           // Ensure the drawing surface matches the canvas size and device pixel ratio
           r.resizeDrawingSurfaceToCanvas();
