@@ -5,22 +5,33 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Kolesa Plus 3D Icon</title>
   <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      width: 100vw;
+      box-sizing: border-box;
+    }
     body {
+      min-height: 100vh;
+      min-width: 100vw;
+      height: 100vh;
+      width: 100vw;
+      margin: 0;
+      padding: 0;
+      background-color: black;
+      overflow: hidden;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
-      margin: 0;
-      background-color: black;
-      position: relative;
     }
     .rive-canvas {
-      width: 360px;
-      height: 757px;
-      position: absolute;
-      top: 46%;
-      left: 50%;
-      transform: translate(-50%, -50%);
+      width: 100vw;
+      height: 100vh;
+      max-width: 100vw;
+      max-height: 100vh;
+      display: block;
+      position: relative;
       background-color: transparent;
     }
   </style>
@@ -30,6 +41,18 @@
 
   <script src="https://unpkg.com/@rive-app/webgl2@latest"></script>
   <script>
+    function resizeCanvas() {
+      const canvas = document.getElementById("canvas1");
+      canvas.width = window.innerWidth * window.devicePixelRatio;
+      canvas.height = window.innerHeight * window.devicePixelRatio;
+      canvas.style.width = window.innerWidth + "px";
+      canvas.style.height = window.innerHeight + "px";
+      if (window.riveInstance) {
+        window.riveInstance.resizeDrawingSurfaceToCanvas();
+      }
+    }
+    window.addEventListener('resize', resizeCanvas);
+    window.addEventListener('orientationchange', resizeCanvas);
     const r = new rive.Rive({
         src: "demo.riv",
         canvas: document.getElementById("canvas1"),
@@ -37,8 +60,8 @@
         artboard: "Demo",
         stateMachines: "Demo",
         onLoad: () => {
-          // Ensure the drawing surface matches the canvas size and device pixel ratio
-          r.resizeDrawingSurfaceToCanvas();
+          window.riveInstance = r;
+          resizeCanvas();
         },
       });
   </script>
