@@ -51,6 +51,9 @@
       <div class="swiper-slide">
         <canvas id="canvas5" class="rive-canvas"></canvas>
       </div>
+      <div class="swiper-slide">
+        <canvas id="canvas6" class="rive-canvas"></canvas>
+      </div>
     </div>
     <!-- Add pagination -->
     </div>
@@ -62,7 +65,7 @@
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
   <script src="https://unpkg.com/@rive-app/canvas"></script>
   <script>
-    let r1, r2, r3, r4, r5;
+    let r1, r2, r3, r4, r5, r6;
 
     const initRive = () => {
       r1 = new rive.Rive({
@@ -119,6 +122,16 @@
           r5.resizeDrawingSurfaceToCanvas();
         },
       });
+      r6 = new rive.Rive({
+        src: "krisha_plus_onboarding_ru.riv",
+        canvas: document.getElementById("canvas6"),
+        autoplay: true,
+        artboard: "Artboard 6",
+        stateMachines: "State Machine",
+        onLoad: () => {
+          r6.resizeDrawingSurfaceToCanvas();
+        },
+      });
     };
 
     const swiper = new Swiper('.swiper', {
@@ -150,6 +163,10 @@
             case 4:
               r5.reset({ artboard: "Artboard 5", stateMachines: "State Machine", autoplay: true });
               r5.play();
+              break;
+            case 5:
+              r6.reset({ artboard: "Artboard 6", stateMachines: "State Machine", autoplay: true });
+              r6.play();
               break;
           }
         },
