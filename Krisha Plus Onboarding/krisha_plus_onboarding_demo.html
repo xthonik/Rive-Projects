@@ -56,10 +56,10 @@
 
     const initRive = () => {
       r2 = new rive.Rive({
-        src: "krisha_plus_onboarding_ru_demo.riv",
+        src: "krisha_plus_onboarding_ru.riv",
         canvas: document.getElementById("canvas2"),
         autoplay: true,
-        artboard: "Artboard 7",
+        artboard: "Artboard 6",
         stateMachines: "State Machine",
         onLoad: () => {
           r2.resizeDrawingSurfaceToCanvas();
@@ -67,10 +67,10 @@
       });
 
       r4 = new rive.Rive({
-        src: "krisha_plus_onboarding_kz_demo.riv",
+        src: "krisha_plus_onboarding_kz.riv",
         canvas: document.getElementById("canvas4"),
         autoplay: true,
-        artboard: "Artboard 7",
+        artboard: "Artboard 6",
         stateMachines: "State Machine",
         onLoad: () => {
           r4.resizeDrawingSurfaceToCanvas();
@@ -89,11 +89,11 @@
         slideChange: function () {
           switch(this.activeIndex) {
             case 0:
-              r2.reset({ artboard: "Artboard 7", stateMachines: "State Machine", autoplay: true });
+              r2.reset({ artboard: "Artboard 6", stateMachines: "State Machine", autoplay: true });
               r2.play();
               break;
             case 1:
-              r4.reset({ artboard: "Artboard 7", stateMachines: "State Machine", autoplay: true });
+              r4.reset({ artboard: "Artboard 6", stateMachines: "State Machine", autoplay: true });
               r4.play();
               break;
           }
