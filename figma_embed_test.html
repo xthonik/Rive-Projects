@@ -15,58 +15,67 @@
       position: relative;
     }
     .rive-canvas {
-      width: 1000px;
-      height: 1000px;
-      position: absolute;
-      top: 0%;
-      left: 0%;
-      transform: translate(0%, 0%);
+      width: 500px;
+      height: 500px;
+      /* Remove absolute positioning for centering */
+      position: static;
+      top: unset;
+      left: unset;
+      transform: none;
       background-color: transparent;
+      display: block;
     }
   </style>
 </head>
 <body>
+  <!-- <div style="position: absolute; top: 20px; left: 20px; z-index: 10; background: #fff; padding: 10px; border-radius: 8px; box-shadow: 0 2px 8px #0001;">
+    <label>Width: <input id="canvasWidth" type="number" value="500" min="100" max="2000" style="width:70px;"></label>
+    <label style="margin-left:10px;">Height: <input id="canvasHeight" type="number" value="500" min="100" max="2000" style="width:70px;"></label>
+    <button id="applySize" style="margin-left:10px;">Apply</button>
+  </div> -->
   <canvas id="canvas1" class="rive-canvas"></canvas>
 
-  <script src="https://unpkg.com/@rive-app/canvas@latest"></script>
-  <!-- <script src="https://unpkg.com/@rive-app/webgl2@latest"></script> -->
+  <!-- <script src="https://unpkg.com/@rive-app/canvas@latest"></script> -->
+  <script src="https://unpkg.com/@rive-app/webgl2@latest"></script>
   <script>
     let r1;
 
     const initRive = () => {
       r1 = new rive.Rive({
-        src: "1_file_all_artboards/likes_2025_demo_rc_1.riv",
+        src: 'https://raw.githubusercontent.com/xthonik/Rive-Projects/main/heart.riv',
         canvas: document.getElementById("canvas1"),
         autoplay: true,
         // Animation: "Loading Animation",
-        artboard: "like",
-        stateMachines: "like",
+        artboard: "Demo",
+        stateMachines: "heart",
+        layout: new rive.Layout({
+          fit: rive.Fit.Contain,
+          alignment: rive.Alignment.Center,
+        }),
         onLoad: () => {
           r1.resizeDrawingSurfaceToCanvas();
-          console.log('artboardNames:', r1.artboardNames);
-          const ab = r1.artboard();
-          if (ab) {
-            console.log('stateMachineNames:', ab.stateMachineNames);
-            if (ab.stateMachineNames.length > 0) {
-              const sm = ab.stateMachineByName(ab.stateMachineNames[0]);
-              console.log('stateMachine:', sm);
-              if (sm) {
-                console.log('inputs:', sm.inputs);
-                console.log('events:', sm.events);
-              } else {
-                console.log('State machine object not found');
-              }
-            } else {
-              console.log('No state machines found');
-            }
-          } else {
-            console.log('Artboard not found');
-          }
         },
       });
     };
 
-    window.addEventListener("load", initRive);
+    window.addEventListener("load", () => {
+      initRive();
+      const canvas = document.getElementById("canvas1");
+      const widthInput = document.getElementById("canvasWidth");
+      const heightInput = document.getElementById("canvasHeight");
+      const applyBtn = document.getElementById("applySize");
+      applyBtn.addEventListener("click", () => {
+        const w = parseInt(widthInput.value, 10);
+        const h = parseInt(heightInput.value, 10);
+        canvas.style.width = w + "px";
+        canvas.style.height = h + "px";
+        canvas.width = w;
+        canvas.height = h;
+        if (r1 && typeof r1.resizeDrawingSurfaceToCanvas === 'function') {
+          r1.resizeDrawingSurfaceToCanvas();
+        }
+      });
+    });
   </script>
 </body>
 </html>
