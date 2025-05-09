@@ -31,12 +31,13 @@
   </style>
 </head>
 <body>
-  <canvas id="canvas1" class="rive-canvas"></canvas>
+  <canvas id="canvas1" class="rive-canvas" width="500" height="500"></canvas>
   <script src="https://unpkg.com/@rive-app/webgl2@latest"></script>
   <script>
     let r1;
     function resizeCanvas() {
       const canvas = document.getElementById("canvas1");
+      // Устанавливаем реальные размеры через атрибуты
       canvas.width = canvas.offsetWidth;
       canvas.height = canvas.offsetHeight;
       if (r1 && typeof r1.resizeDrawingSurfaceToCanvas === 'function') {
@@ -48,8 +49,8 @@
         src: 'https://raw.githubusercontent.com/xthonik/Rive-Projects/main/heart.riv',
         canvas: document.getElementById("canvas1"),
         autoplay: true,
-        artboard: "Demo",
-        stateMachines: "heart",
+        artboard: "heart",
+        stateMachines: "demoSM",
         layout: new rive.Layout({
           fit: rive.Fit.Contain,
           alignment: rive.Alignment.Center,
@@ -60,8 +61,8 @@
       });
     }
     window.addEventListener("load", () => {
-      resizeCanvas();
       initRive();
+      // resizeCanvas вызывается после onLoad
     });
     window.addEventListener("resize", resizeCanvas);
   </script>
