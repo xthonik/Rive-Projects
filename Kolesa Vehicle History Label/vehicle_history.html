@@ -3,88 +3,92 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Анимация лайка в Kolesa.kz</title>
+  <title>Rive Enum Binding – Language Selector (Fixed)</title>
   <style>
+    * { box-sizing: border-box; }
     body {
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
-      height: 100vh;
-      margin: 10;
-      background-color: rgb(214, 214, 214);
-      position: relative;
+      min-height: 100vh;
+      margin: 0;
+      background: #121212;
+      color: #f0f0f0;
+      gap: 1.5rem;
+      font-family: system-ui, sans-serif;
     }
     .rive-canvas {
-      width: 500px;
-      height: 500px;
-      /* Remove absolute positioning for centering */
-      position: static;
-      top: unset;
-      left: unset;
-      transform: none;
-      background-color: transparent;
-      display: block;
+      width: 320px;
+      height: 120px;
+      background: #222;
+      border-radius: 12px;
+    }
+    select {
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      background: #444;
+      color: #f0f0f0;
+      border: none;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
+  <canvas id="riveCanvas" class="rive-canvas"></canvas>
+  <select id="languageSelect">
+    <option value="ru">RU</option>
+    <option value="kz">KZ</option>
+    <option value="en">EN</option>
+  </select>
 
-  <canvas id="canvas1" class="rive-canvas"></canvas>
-
+  <!-- WebGL2 runtime -->
   <script src="https://unpkg.com/@rive-app/webgl2@latest"></script>
   <script>
-    let r1;
-    let languageInput = null;
+    let riveInstance;
+    let languageInput;
+    let languageEnum;
 
-    function bindLanguageInput() {
-      if (r1 && r1.stateMachineInputs && r1.stateMachineInputs("label")) {
-        const inputs = r1.stateMachineInputs("label");
-        languageInput = inputs.find(input => input.name === "language");
+    function bindLanguage() {
+      if (!riveInstance || !riveInstance.viewModelInstance) return;
+      const vm = riveInstance.viewModelInstance;
+      languageInput = vm.inputs?.find(i => i.name === 'language');
+      if (languageInput) {
+        languageEnum = rive.enums(languageInput);
       }
     }
 
-    const initRive = () => {
-      r1 = new rive.Rive({
-        src: 'vehicle_history.riv',
-        canvas: document.getElementById("canvas1"),
+    function setLanguage(code) {
+      if (!languageInput || !languageEnum) bindLanguage();
+      if (languageInput && languageEnum && languageEnum[code] !== undefined) {
+        languageInput.value = languageEnum[code];
+        // 🔄 Push the change into the render loop so Rive sees it
+        riveInstance.requestUpload();
+      }
+    }
+
+    function initRive() {
+      const canvas = document.getElementById('riveCanvas');
+      riveInstance = new rive.Rive({
+        src: 'https://raw.githubusercontent.com/xthonik/Rive-Projects/main/Kolesa%20Vehicle%20History%20Label/vehicle_history.riv',
+        canvas,
+        artboard: 'vehicle_history_label',
+        stateMachines: 'label',
+        autoBind: true,
         autoplay: true,
-        autobind: true,
-        artboard: "vehicle_history_label",
-        stateMachines: "label",
-        layout: new rive.Layout({
-          fit: rive.Fit.Contain,
-          alignment: rive.Alignment.Center,
-        }),
         onLoad: () => {
-          r1.resizeDrawingSurfaceToCanvas();
-          bindLanguageInput();
+          riveInstance.resizeDrawingSurfaceToCanvas();
+          bindLanguage();
+          // default language visible on load
+          setLanguage('ru');
         },
       });
-    };
-    window.addEventListener("DOMContentLoaded", initRive);
-
-    function setLanguage(value) {
-      if (!languageInput) {
-        bindLanguageInput();
-      }
-      if (languageInput) {
-        languageInput.value = value;
-      }
     }
 
-    document.addEventListener("DOMContentLoaded", function() {
-      const select = document.createElement("select");
-      select.id = "languageSelect";
-      ["ru", "kz", "en"].forEach(lang => {
-        const option = document.createElement("option");
-        option.value = lang;
-        option.textContent = lang.toUpperCase();
-        select.appendChild(option);
-      });
-      select.addEventListener("change", function() {
-        setLanguage(this.value);
-      });
-      document.body.appendChild(select);
+    window.addEventListener('DOMContentLoaded', () => {
+      initRive();
+      const select = document.getElementById('languageSelect');
+      select.addEventListener('change', e => setLanguage(e.target.value));
     });
   </script>
 </body>
