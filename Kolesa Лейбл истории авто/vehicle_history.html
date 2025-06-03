@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Анимация лайка в Kolesa.kz</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 10;
+      background-color: rgb(214, 214, 214);
+      position: relative;
+    }
+    .rive-canvas {
+      width: 500px;
+      height: 500px;
+      /* Remove absolute positioning for centering */
+      position: static;
+      top: unset;
+      left: unset;
+      transform: none;
+      background-color: transparent;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+  <canvas id="canvas1" class="rive-canvas"></canvas>
+
+  <script src="https://unpkg.com/@rive-app/webgl2@latest"></script>
+  <script>
+    let r1;
+    let languageInput = null;
+
+    function bindLanguageInput() {
+      if (r1 && r1.stateMachineInputs && r1.stateMachineInputs("label")) {
+        const inputs = r1.stateMachineInputs("label");
+        languageInput = inputs.find(input => input.name === "language");
+      }
+    }
+
+    const initRive = () => {
+      r1 = new rive.Rive({
+        src: 'vehicle_history.riv',
+        canvas: document.getElementById("canvas1"),
+        autoplay: true,
+        autobind: true,
+        artboard: "vehicle_history_label",
+        stateMachines: "label",
+        layout: new rive.Layout({
+          fit: rive.Fit.Contain,
+          alignment: rive.Alignment.Center,
+        }),
+        onLoad: () => {
+          r1.resizeDrawingSurfaceToCanvas();
+          bindLanguageInput();
+        },
+      });
+    };
+    window.addEventListener("DOMContentLoaded", initRive);
+
+    function setLanguage(value) {
+      if (!languageInput) {
+        bindLanguageInput();
+      }
+      if (languageInput) {
+        languageInput.value = value;
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+      const select = document.createElement("select");
+      select.id = "languageSelect";
+      ["ru", "kz", "en"].forEach(lang => {
+        const option = document.createElement("option");
+        option.value = lang;
+        option.textContent = lang.toUpperCase();
+        select.appendChild(option);
+      });
+      select.addEventListener("change", function() {
+        setLanguage(this.value);
+      });
+      document.body.appendChild(select);
+    });
+  </script>
+</body>
+</html>
