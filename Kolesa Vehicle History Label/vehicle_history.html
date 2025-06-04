@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rive Enum Binding – Language Selector (Fixed)</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      background: #121212;
+      color: #f0f0f0;
+      gap: 1.5rem;
+      font-family: system-ui, sans-serif;
+    }
+    .rive-canvas {
+      width: 320px;
+      height: 120px;
+      background: #222;
+      border-radius: 12px;
+    }
+    select {
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      background: #444;
+      color: #f0f0f0;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="riveCanvas" class="rive-canvas"></canvas>
+  <select id="languageSelect">
+    <option value="ru">RU</option>
+    <option value="kz">KZ</option>
+    <option value="en">EN</option>
+  </select>
+
+  <!-- WebGL2 runtime -->
+  <script src="https://unpkg.com/@rive-app/webgl2@latest"></script>
+  <script>
+    let riveInstance;
+    let languageInput;
+    let languageEnum;
+
+    function bindLanguage() {
+      if (!riveInstance || !riveInstance.viewModelInstance) return;
+      const vm = riveInstance.viewModelInstance;
+      languageInput = vm.inputs?.find(i => i.name === 'language');
+      if (languageInput) {
+        languageEnum = rive.enums(languageInput);
+      }
+    }
+
+    function setLanguage(code) {
+      if (!languageInput || !languageEnum) bindLanguage();
+      if (languageInput && languageEnum && languageEnum[code] !== undefined) {
+        languageInput.value = languageEnum[code];
+        // 🔄 Push the change into the render loop so Rive sees it
+        riveInstance.requestUpload();
+      }
+    }
+
+    function initRive() {
+      const canvas = document.getElementById('riveCanvas');
+      riveInstance = new rive.Rive({
+        src: 'https://raw.githubusercontent.com/xthonik/Rive-Projects/main/Kolesa%20Vehicle%20History%20Label/vehicle_history.riv',
+        canvas,
+        artboard: 'vehicle_history_label',
+        stateMachines: 'label',
+        autoBind: true,
+        autoplay: true,
+        onLoad: () => {
+          riveInstance.resizeDrawingSurfaceToCanvas();
+          bindLanguage();
+          // default language visible on load
+          setLanguage('ru');
+        },
+      });
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      initRive();
+      const select = document.getElementById('languageSelect');
+      select.addEventListener('change', e => setLanguage(e.target.value));
+    });
+  </script>
+</body>
+</html>

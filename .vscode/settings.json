@@ -1,3 +1,4 @@
 {
-    "chat.agent.enabled": true
+    "chat.agent.enabled": true,
+    "livePreview.defaultPreviewPath": "/Kolesa Vehicle History Label/vehicle_history.html"
 }
