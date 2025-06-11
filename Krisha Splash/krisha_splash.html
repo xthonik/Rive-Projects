@@ -30,12 +30,12 @@
   const { Rive, Layout, Fit } = rive;
 
   const riveInstance = new Rive({
-    src: "krisha_splash.riv",
+    src: "splash_animation.riv",
     canvas: document.getElementById("canvas1"),
     autoplay: true,
     autoBind: true,
-    artboard: "Demo",
-    stateMachines: "Demo",
+    artboard: "artboard",
+    stateMachines: "default",
     layout: new Layout({
       fit: Fit.Layout,
       // layoutScaleFactor: 2, // Uncomment to scale layout if needed
