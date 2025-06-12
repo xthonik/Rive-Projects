@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Анимация лайка в Kolesa.kz</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 10;
+      background-color: rgb(0, 0, 0);
+      position: relative;
+    }
+    .rive-canvas {
+      width: 200px;
+      height: 300px;
+      /* Remove absolute positioning for centering */
+      position: static;
+      top: unset;
+      left: unset;
+      transform: none;
+      background-color: transparent;
+      display: block;
+      border-color: red;
+      background-color: rgb(216, 216, 216);
+    }
+  </style>
+</head>
+<body>
+ 
+  <canvas id="canvas1" class="rive-canvas"></canvas>
+
+  <script src="https://unpkg.com/@rive-app/canvas@latest"></script>
+  <!-- <script src="https://unpkg.com/@rive-app/webgl2@latest"></script> -->
+  <script>
+    let r1;
+
+    const initRive = () => {
+      r1 = new rive.Rive({
+        src: 'label_android_prod.riv',
+        canvas: document.getElementById("canvas1"),
+        autoplay: true,
+        // Animation: "Loading Animation",
+        artboard: "vehicle_history_label",
+        stateMachines: "animation_ru",
+        layout: new rive.Layout({
+          fit: rive.Fit.Contain,
+          alignment: rive.Alignment.Center,
+        }),
+        onLoad: () => {
+          r1.resizeDrawingSurfaceToCanvas();
+        },
+      });
+    };
+
+    window.addEventListener("load", () => {
+      initRive();
+      const canvas = document.getElementById("canvas1");
+      const widthInput = document.getElementById("canvasWidth");
+      const heightInput = document.getElementById("canvasHeight");
+      const applyBtn = document.getElementById("applySize");
+      applyBtn.addEventListener("click", () => {
+        const w = parseInt(widthInput.value, 10);
+        const h = parseInt(heightInput.value, 10);
+        canvas.style.width = w + "px";
+        canvas.style.height = h + "px";
+        canvas.width = w;
+        canvas.height = h;
+        if (r1 && typeof r1.resizeDrawingSurfaceToCanvas === 'function') {
+          r1.resizeDrawingSurfaceToCanvas();
+        }
+      });
+    });
+  </script>
+</body>
+</html>
