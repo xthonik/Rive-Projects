@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rive Enum Property Data Binding Example</title>
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      background: #f0f0f0;
+    }
+    .rive-canvas {
+      width: 375px;
+      height: 400px;
+      background: transparent;
+      margin-bottom: 20px;
+    }
+    select {
+      font-size: 1.2em;
+      padding: 0.5em;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="riveCanvas" class="rive-canvas"></canvas>
+  <label for="enumSelect">Enum Property:</label>
+  <select id="enumSelect">
+    <option value="Idle">Idle</option>
+    <option value="Active">Active</option>
+    <option value="Success">Success</option>
+  </select>
+
+  <script src="https://unpkg.com/@rive-app/canvas@latest"></script>
+  <script>
+    let riveInstance;
+    const { Rive, Layout, Fit } = rive;
+    const enumPropertyName = "State"; // Name of the enum property in your Rive file
+    const stateMachineName = "State Machine 1"; // Name of the state machine
+
+    riveInstance = new Rive({
+      src: "demo.riv", // Replace with your .riv file
+      canvas: document.getElementById("riveCanvas"),
+      autoplay: true,
+      stateMachines: stateMachineName,
+      layout: new Layout({
+        fit: Fit.Contain,
+      }),
+      onLoad: () => {
+        // Set initial value from select
+        setEnumProperty(document.getElementById("enumSelect").value);
+      },
+    });
+
+    function setEnumProperty(value) {
+      const inputs = riveInstance.stateMachineInputs(stateMachineName);
+      const enumInput = inputs.find(input => input.name === enumPropertyName);
+      if (enumInput) {
+        enumInput.value = value;
+      }
+    }
+
+    document.getElementById("enumSelect").addEventListener("change", (e) => {
+      setEnumProperty(e.target.value);
+    });
+  </script>
+</body>
+</html>
