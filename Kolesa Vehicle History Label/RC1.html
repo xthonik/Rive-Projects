@@ -17,7 +17,7 @@
       display: flex;
       justify-content: center;  /* horizontal centring */
       align-items: center;      /* vertical centring */
-      background: #9b9b9b;  
+      background: #e2e2e2;  
     }
     /* Let the canvas scale responsively if you prefer */
     canvas {
@@ -38,32 +38,34 @@
 
 
   <!-- 4. Initialise Rive -->
+  <!--
+    Ниже приведён скрипт, который инициализирует и управляет анимацией Rive на canvas.
+    Подробные комментарии к каждой строке:
+  -->
   <script>
+    // Создаём новый экземпляр Rive с заданными параметрами
     const r = new rive.Rive({
       src: 'label_android_rc1.riv',
       canvas: document.getElementById('rive-canvas'),
+      // autoplay: true — анимация запускается автоматически при загрузке
       autoplay: true,
+      // autoBind: true — автоматическая привязка событий и свойств
       autoBind: true,
-      artboard: 'label', 
+      artboard: 'label',
       stateMachines: 'animation',
 
-
       onLoad: () => {
-
-
-        const vmi = r.viewModelInstance
-        vmi.enums('language').value = 'kz'
-
-
-        r.resizeDrawingSurfaceToCanvas()
+        // Получаем экземпляр viewModelInstance для управления параметрами анимации
+        const vmi = r.viewModelInstance;
+        // Устанавливаем значение enum-параметра 'language'
+        vmi.enum('language').value = 'en';
+        r.resizeDrawingSurfaceToCanvas();
       }
     });
 
-
-
-
-    // Keep things sharp if the window is resized
+    // Добавляем обработчик события изменения размера окна
     window.addEventListener('resize', () =>
+      // При изменении размера окна подгоняем размер анимации под новый размер canvas
       r.resizeDrawingSurfaceToCanvas()
     );
   </script>
