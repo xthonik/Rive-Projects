@@ -38,27 +38,25 @@
 
 
   <!-- 4. Initialise Rive -->
-  <!--
-    Ниже приведён скрипт, который инициализирует и управляет анимацией Rive на canvas.
-    Подробные комментарии к каждой строке:
-  -->
   <script>
     // Создаём новый экземпляр Rive с заданными параметрами
     const r = new rive.Rive({
-      src: 'label_android_rc1.riv',
+      src: 'label_android_prod.riv',
+      // src: 'label_ios_prod.riv',
+
       canvas: document.getElementById('rive-canvas'),
       // autoplay: true — анимация запускается автоматически при загрузке
       autoplay: true,
-      // autoBind: true — автоматическая привязка событий и свойств
+      // autoBind: true — автоматическая привязка view model к стейт машине
       autoBind: true,
-      artboard: 'label',
+      artboard: 'vehicle_history_label',
       stateMachines: 'animation',
 
       onLoad: () => {
         // Получаем экземпляр viewModelInstance для управления параметрами анимации
         const vmi = r.viewModelInstance;
-        // Устанавливаем значение enum-параметра 'language'
-        vmi.enum('language').value = 'en';
+        // Устанавливаем значение enum-параметра 'language': ru, kz или en
+        vmi.enum('language').value = 'ru';
         r.resizeDrawingSurfaceToCanvas();
       }
     });
