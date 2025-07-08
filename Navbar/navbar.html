@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Label with Enum</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+  <!-- 1. Page-level styling -->
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+    }
+    /* Flexbox centres everything in the viewport */
+    body {
+      display: flex;
+      justify-content: center;  /* horizontal centring */
+      align-items: center;      /* vertical centring */
+      background: #e2e2e2;  
+    }
+    /* Let the canvas scale responsively if you prefer */
+    canvas {
+      width: 500px;
+      height: 500px;
+    }
+  </style>
+
+
+  <!-- 2. Latest Rive runtime  -->
+  <script src="https://unpkg.com/@rive-app/canvas@latest"></script>
+  
+</head>
+
+
+<body>
+  <!-- 3. Canvas placeholder -->
+  <canvas id="rive-canvas"></canvas>
+  <!-- 4. Initialise Rive -->
+  <script>
+    const r = new rive.Rive({
+      src: 'navbar.riv',
+      canvas: document.getElementById('rive-canvas'),
+      autoplay: true,
+      autoBind: true,
+      artboard: 'navbar_3',
+      stateMachines: 'navbar',
+      layout: new rive.Layout({
+        fit: rive.Fit.Contain,
+      }),
+
+      onLoad: () => {
+        const vmi = r.viewModelInstance;
+        vmi.enum('counter_display').value = 'Show';
+        vmi.number('count').value = 9;
+
+        r.resizeDrawingSurfaceToCanvas();
+        
+      }
+    });
+
+    window.addEventListener('resize', () =>
+      r.resizeDrawingSurfaceToCanvas()
+    );
+  </script>
+</body>
+</html>
