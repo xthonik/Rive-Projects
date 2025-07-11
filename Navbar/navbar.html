@@ -35,7 +35,29 @@
 
 <body>
   <!-- 3. Canvas placeholder -->
-  <canvas id="rive-canvas"></canvas>
+  <div style="display:flex; flex-direction:column; align-items:center; width:100vw;">
+    <canvas id="rive-canvas"></canvas>
+    <div id="controls-block" style="width:500px; margin:32px 0 0 0; display:flex; flex-direction:column; gap:16px; align-items:center;">
+      <label>
+        Counter Display:
+        <select id="counterDisplay">
+          <option value="Show">Show</option>
+          <option value="Hide">Hide</option>
+        </select>
+      </label>
+      <label>
+        Count:
+        <input type="number" id="countInput" min="0" max="99" value="9" style="width:80px;">
+      </label>
+      <label>
+        Snow Display:
+        <select id="snowDisplay">
+          <option value="Show">Show</option>
+          <option value="Hide">Hide</option>
+        </select>
+      </label>
+    </div>
+  </div>
   <!-- 4. Initialise Rive -->
   <script>
     const r = new rive.Rive({
@@ -51,11 +73,21 @@
 
       onLoad: () => {
         const vmi = r.viewModelInstance;
-        vmi.enum('counter_display').value = 'Show';
-        vmi.number('count').value = 9;
-
+        // Инициализация контролов
+        document.getElementById('counterDisplay').value = vmi.enum('counter_display').value;
+        document.getElementById('countInput').value = vmi.number('count').value;
+        document.getElementById('snowDisplay').value = vmi.enum('snow_display').value;
+        // Обработчики событий
+        document.getElementById('counterDisplay').addEventListener('change', e => {
+          vmi.enum('counter_display').value = e.target.value;
+        });
+        document.getElementById('countInput').addEventListener('input', e => {
+          vmi.number('count').value = Number(e.target.value);
+        });
+        document.getElementById('snowDisplay').addEventListener('change', e => {
+          vmi.enum('snow_display').value = e.target.value;
+        });
         r.resizeDrawingSurfaceToCanvas();
-        
       }
     });
 
