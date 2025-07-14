@@ -12,17 +12,34 @@
       height: 100%;
       margin: 0;
     }
-    /* Flexbox centres everything in the viewport */
     body {
       display: flex;
-      justify-content: center;  /* horizontal centring */
-      align-items: center;      /* vertical centring */
-      background: #e2e2e2;  
+      justify-content: center;
+      align-items: center;
+      background: #e2e2e2;
     }
-    /* Let the canvas scale responsively if you prefer */
-    canvas {
-      width: 500px;
-      height: 500px;
+    .canvas-wrapper {
+      width: 100vw;
+      max-width: 500px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    #rive-canvas {
+      width: 100vw;
+      max-width: 500px;
+      height: auto;
+      aspect-ratio: 1 / 1;
+      display: block;
+    }
+    #controls-block {
+      width: 100vw;
+      max-width: 500px;
+      margin: 32px 0 0 0;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      align-items: center;
     }
   </style>
 
@@ -34,30 +51,29 @@
 
 
 <body>
-  <!-- 3. Canvas placeholder -->
-  <div style="display:flex; flex-direction:column; align-items:center; width:100vw;">
-    <canvas id="rive-canvas"></canvas>
-    <div id="controls-block" style="width:500px; margin:32px 0 0 0; display:flex; flex-direction:column; gap:16px; align-items:center;">
-      <label>
-        Counter Display:
-        <select id="counterDisplay">
-          <option value="Show">Show</option>
-          <option value="Hide">Hide</option>
-        </select>
-      </label>
-      <label>
-        Count:
-        <input type="number" id="countInput" min="0" max="99" value="9" style="width:80px;">
-      </label>
-      <label>
-        Snow Display:
-        <select id="snowDisplay">
-          <option value="Show">Show</option>
-          <option value="Hide">Hide</option>
-        </select>
-      </label>
+    <div class="canvas-wrapper">
+      <canvas id="rive-canvas"></canvas>
+      <div id="controls-block">
+        <label>
+          Counter Display:
+          <select id="counterDisplay">
+            <option value="Show">Show</option>
+            <option value="Hide">Hide</option>
+          </select>
+        </label>
+        <label>
+          Count:
+          <input type="number" id="countInput" min="0" max="99" value="9" style="width:80px;">
+        </label>
+        <label>
+          Snow Display:
+          <select id="snowDisplay">
+            <option value="Show">Show</option>
+            <option value="Hide">Hide</option>
+          </select>
+        </label>
+      </div>
     </div>
-  </div>
   <!-- 4. Initialise Rive -->
   <script>
     const r = new rive.Rive({
@@ -91,9 +107,16 @@
       }
     });
 
-    window.addEventListener('resize', () =>
-      r.resizeDrawingSurfaceToCanvas()
-    );
+    function resizeCanvas() {
+      const canvas = document.getElementById('rive-canvas');
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width;
+      canvas.height = rect.height;
+      if (window.r) window.r.resizeDrawingSurfaceToCanvas();
+    }
+    window.addEventListener('resize', resizeCanvas);
+    window.addEventListener('orientationchange', resizeCanvas);
+    document.addEventListener('DOMContentLoaded', resizeCanvas);
   </script>
 </body>
 </html>
