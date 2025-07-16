@@ -63,7 +63,7 @@
         </label>
         <label>
           Count:
-          <input type="number" id="countInput" min="0" max="99" value="9" style="width:80px;">
+          <input type="number" id="countInput" min="0" max="999" value="9" style="width:80px;">
         </label>
         <label>
           Snow Display:
@@ -72,28 +72,26 @@
             <option value="Hide">Hide</option>
           </select>
         </label>
+        <label>
+          Language:
+          <select id="languageSelect">
+            <option value="en">en</option>
+            <option value="ru">ru</option>
+            <option value="kz">kz</option>
+          </select>
+        </label>
       </div>
     </div>
-  <!-- 4. Initialise Rive -->
-  <script>
-    const r = new rive.Rive({
-      src: 'navbar.riv',
-      canvas: document.getElementById('rive-canvas'),
-      autoplay: true,
-      autoBind: true,
-      artboard: 'navbar_3',
-      stateMachines: 'navbar',
-      layout: new rive.Layout({
-        fit: rive.Fit.Contain,
-      }),
-
-      onLoad: () => {
-        const vmi = r.viewModelInstance;
-        // Инициализация контролов
+    <!-- 4. Initialise Rive -->
+    <script>
+      function syncControls(vmi) {
         document.getElementById('counterDisplay').value = vmi.enum('counter_display').value;
         document.getElementById('countInput').value = vmi.number('count').value;
         document.getElementById('snowDisplay').value = vmi.enum('snow_display').value;
-        // Обработчики событий
+        document.getElementById('languageSelect').value = vmi.enum('language').value;
+      }
+
+      function addControlListeners(vmi) {
         document.getElementById('counterDisplay').addEventListener('change', e => {
           vmi.enum('counter_display').value = e.target.value;
         });
@@ -103,20 +101,41 @@
         document.getElementById('snowDisplay').addEventListener('change', e => {
           vmi.enum('snow_display').value = e.target.value;
         });
-        r.resizeDrawingSurfaceToCanvas();
+        document.getElementById('languageSelect').addEventListener('change', e => {
+          vmi.enum('language').value = e.target.value;
+        });
       }
-    });
 
-    function resizeCanvas() {
-      const canvas = document.getElementById('rive-canvas');
-      const rect = canvas.getBoundingClientRect();
-      canvas.width = rect.width;
-      canvas.height = rect.height;
-      if (window.r) window.r.resizeDrawingSurfaceToCanvas();
-    }
-    window.addEventListener('resize', resizeCanvas);
-    window.addEventListener('orientationchange', resizeCanvas);
-    document.addEventListener('DOMContentLoaded', resizeCanvas);
-  </script>
-</body>
+      function resizeCanvas() {
+        const canvas = document.getElementById('rive-canvas');
+        const rect = canvas.getBoundingClientRect();
+        canvas.width = rect.width;
+        canvas.height = rect.height;
+        if (window.r) window.r.resizeDrawingSurfaceToCanvas();
+      }
+
+      document.addEventListener('DOMContentLoaded', () => {
+        resizeCanvas();
+        const r = new rive.Rive({
+          src: 'navbar.riv',
+          canvas: document.getElementById('rive-canvas'),
+          autoplay: true,
+          autoBind: true,
+          artboard: 'navbar_3',
+          stateMachines: 'navbar',
+          layout: new rive.Layout({ fit: rive.Fit.Contain }),
+          onLoad: () => {
+            const vmi = r.viewModelInstance;
+            syncControls(vmi);
+            addControlListeners(vmi);
+            r.resizeDrawingSurfaceToCanvas();
+          }
+        });
+        window.r = r;
+      });
+
+      window.addEventListener('resize', resizeCanvas);
+      window.addEventListener('orientationchange', resizeCanvas);
+    </script>
+  </body>
 </html>
