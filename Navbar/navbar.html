@@ -80,6 +80,13 @@
             <option value="kz">kz</option>
           </select>
         </label>
+        <label>
+          Plus Display:
+          <select id="plusDisplay">
+            <option value="Show">Show</option>
+            <option value="Hide">Hide</option>
+          </select>
+        </label>
       </div>
     </div>
     <!-- 4. Initialise Rive -->
@@ -89,6 +96,7 @@
         document.getElementById('countInput').value = vmi.number('count').value;
         document.getElementById('snowDisplay').value = vmi.enum('snow_display').value;
         document.getElementById('languageSelect').value = vmi.enum('language').value;
+        document.getElementById('plusDisplay').value = vmi.enum('plus_display').value;
       }
 
       function addControlListeners(vmi) {
@@ -103,6 +111,9 @@
         });
         document.getElementById('languageSelect').addEventListener('change', e => {
           vmi.enum('language').value = e.target.value;
+        });
+        document.getElementById('plusDisplay').addEventListener('change', e => {
+          vmi.enum('plus_display').value = e.target.value;
         });
       }
 
@@ -121,7 +132,7 @@
           canvas: document.getElementById('rive-canvas'),
           autoplay: true,
           autoBind: true,
-          artboard: 'navbar_3',
+          artboard: 'navbar',
           stateMachines: 'navbar',
           layout: new rive.Layout({ fit: rive.Fit.Contain }),
           onLoad: () => {
