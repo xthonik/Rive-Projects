@@ -9,37 +9,38 @@
   <!-- 1. Page-level styling -->
   <style>
     html, body {
-      height: 100%;
+      height: 100vh;
       margin: 0;
+      width: 100vw;
     }
     body {
+      min-height: 100vh;
+      min-width: 100vw;
       display: flex;
       justify-content: center;
       align-items: center;
       background: #e2e2e2;
     }
     .canvas-wrapper {
-      width: 100vw;
-      max-width: 500px;
+      width: 375px;
       display: flex;
       flex-direction: column;
       align-items: center;
+      justify-content: center;
     }
     #rive-canvas {
-      width: 100vw;
-      max-width: 500px;
-      height: auto;
-      aspect-ratio: 1 / 1;
+      width: 675px;
+      height: 200px;
       display: block;
     }
     #controls-block {
-      width: 100vw;
-      max-width: 500px;
+      width: 375px;
       margin: 32px 0 0 0;
       display: flex;
       flex-direction: column;
       gap: 16px;
       align-items: center;
+      justify-content: center;
     }
   </style>
 
@@ -122,9 +123,8 @@
       // Utility to resize canvas to fit parent
       function resizeCanvas() {
         const canvas = document.getElementById('rive-canvas');
-        const rect = canvas.getBoundingClientRect();
-        canvas.width = rect.width;
-        canvas.height = rect.height;
+        canvas.width = 375;
+        canvas.height = 100;
         if (window.r) window.r.resizeDrawingSurfaceToCanvas();
       }
 
@@ -138,7 +138,7 @@
           autoBind: true,
           artboard: 'navbar',
           stateMachines: 'navbar',
-          layout: new rive.Layout({ fit: rive.Fit.Contain }),
+          layout: new rive.Layout({ fit: rive.Fit.Layout }),
           onLoad: () => {
             const vmi = r.viewModelInstance;
             syncControls(vmi);
