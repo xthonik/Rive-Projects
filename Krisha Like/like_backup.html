@@ -5,17 +5,7 @@
   <title>Krisha Like</title>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <style>
-  html,body{height:100%;margin:0}
-  body{display:flex;flex-direction:column;align-items:center;background:#000000}
-  canvas#rive-canvas{
-    width:100%;
-    max-width:500px;
-    height:auto;
-    margin-bottom:20px;
-    display:block;
-  }
-  button{margin:5px;padding:10px;cursor:pointer}
-  </style>
+  html,body{height:100%;margin:0}body{display:flex;flex-direction:column;align-items:center;background:#000000}canvas{width:500px;margin-bottom:20px}button{margin:5px;padding:10px;cursor:pointer}</style>
   <script src="https://unpkg.com/@rive-app/webgl2"></script>
 </head>
 <body>
@@ -32,9 +22,6 @@
       <button onclick="setEnum('entry_state', 'unliked')">Unliked</button>
       <button onclick="setEnum('entry_state', 'liked')">Liked</button>
     </div>
-    <div style="margin-top:10px;">
-      <span>Last Event: </span><span id="event-indicator" style="font-weight:bold;color:#007700;">-</span>
-    </div>
   </div>
   <script>
     let r;
@@ -46,19 +33,6 @@
     function setEnum(enumName, value) {
       selectedEnums[enumName] = value;
       initializeRive();
-    }
-
-    function riveEvent(riveEvent) {
-      const eventData = riveEvent.data;
-      if (eventData && (eventData.name === 'liked' || eventData.name === 'unliked')) {
-        updateEventIndicator(eventData.name);
-      }
-    }
-
-    function updateEventIndicator(eventName) {
-      const indicator = document.getElementById('event-indicator');
-      indicator.textContent = eventName;
-      indicator.style.color = eventName === 'liked' ? '#007700' : '#bb2222';
     }
 
     function initializeRive() {
@@ -77,15 +51,11 @@
           vmi.enum('context').value = selectedEnums.context;
           vmi.enum('entry_state').value = selectedEnums.entry_state;
           r.resizeDrawingSurfaceToCanvas();
-          // Подписка на события
-          r.on(rive.EventType.RiveEvent, riveEvent);
         }
       });
     }
 
     addEventListener('resize', () => r.resizeDrawingSurfaceToCanvas());
-    // Ensure canvas resizes on load for mobile
-    window.addEventListener('DOMContentLoaded', () => r.resizeDrawingSurfaceToCanvas());
 
     initializeRive();
   </script>
