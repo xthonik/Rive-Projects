@@ -12,8 +12,7 @@
 </head>
 <body>
   <canvas id="rive-canvas" width="400" height="400" style="display:block;"></canvas>
-    <script>
-    // Функция для подгонки canvas под размер контейнера
+  <script>
     let canvas = document.getElementById('rive-canvas');
     function resizeCanvas() {
       let rect = canvas.getBoundingClientRect();
@@ -31,13 +30,11 @@
       autoBind: true,
       artboard: 'like',
       stateMachines: 'like',
-      layout: new rive.Layout({ fit: rive.Fit.Contain }),
       onLoad: () => {
         let vmi = r.viewModelInstance;
         if (vmi && vmi.enum) {
           vmi.enum('type').value = 'recs';
           vmi.enum('entry_state').value = 'unliked';
-
         }
         r.resizeDrawingSurfaceToCanvas();
       }
