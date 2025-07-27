@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Kolesa Navbar</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+  <!-- 1. Page-level styling -->
+  <style>
+    html, body {
+      height: 100vh;
+      margin: 0;
+      width: 100vw;
+    }
+    body {
+      min-height: 100vh;
+      min-width: 100vw;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #e2e2e2;
+    }
+    .canvas-wrapper {
+      width: 375px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    #rive-canvas {
+      width: 675px;
+      height: 120px;
+      display: block;
+    }
+    #controls-block {
+      width: 375px;
+      margin: 32px 0 0 0;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      align-items: center;
+      justify-content: center;
+    }
+  </style>
+
+
+  <!-- 2. Latest Rive runtime  -->
+  <script src="https://unpkg.com/@rive-app/canvas@latest"></script>
+  
+</head>
+
+
+<body>
+    <div class="canvas-wrapper">
+      <canvas id="rive-canvas"></canvas>
+      <div id="controls-block">
+        <label>
+          Language:
+          <select id="languageSelect">
+            <option value="en">en</option>
+            <option value="ru">ru</option>
+            <option value="kz">kz</option>
+          </select>
+        </label>
+        <label>
+          Profile Badge Display:
+          <select id="profileBadgeDisplay">
+            <option value="Show">Show</option>
+            <option value="Hide">Hide</option>
+          </select>
+        </label>
+        <label>
+          Messages Badge Display:
+          <select id="messagesBadgeDisplay">
+            <option value="Show">Show</option>
+            <option value="Hide">Hide</option>
+          </select>
+        </label>
+        <label>
+          Messages Badge Count:
+          <input type="number" id="messagesBadgeCount" min="0" max="999" value="0" style="width:80px;">
+        </label>
+        <label>
+          Home Snow Display:
+          <select id="homeSnowDisplay">
+            <option value="Show">Show</option>
+            <option value="Hide">Hide</option>
+          </select>
+        </label>
+      </div>
+    </div>
+    <!-- 4. Initialise Rive -->
+    <script>
+      // Utility to sync UI controls with ViewModel values
+      function syncControls(vmi) {
+        document.getElementById('languageSelect').value = vmi.enum('language').value;
+        document.getElementById('profileBadgeDisplay').value = vmi.enum('profile_badge_display').value;
+        document.getElementById('messagesBadgeDisplay').value = vmi.enum('messages_badge_display').value;
+        document.getElementById('messagesBadgeCount').value = vmi.number('messages_badge_count').value;
+        document.getElementById('homeSnowDisplay').value = vmi.enum('home_snow_display').value;
+      }
+
+      // Utility to add listeners to controls
+      function addControlListeners(vmi) {
+        document.getElementById('languageSelect').addEventListener('change', e => {
+          vmi.enum('language').value = e.target.value;
+        });
+        document.getElementById('profileBadgeDisplay').addEventListener('change', e => {
+          vmi.enum('profile_badge_display').value = e.target.value;
+        });
+        document.getElementById('messagesBadgeDisplay').addEventListener('change', e => {
+          vmi.enum('messages_badge_display').value = e.target.value;
+        });
+        document.getElementById('messagesBadgeCount').addEventListener('input', e => {
+          vmi.number('messages_badge_count').value = Number(e.target.value);
+        });
+        document.getElementById('homeSnowDisplay').addEventListener('change', e => {
+          vmi.enum('home_snow_display').value = e.target.value;
+        });
+      }
+
+      // Utility to resize canvas to fit parent
+      function resizeCanvas() {
+        const canvas = document.getElementById('rive-canvas');
+        canvas.width = 375;
+        canvas.height = 100;
+        if (window.r) window.r.resizeDrawingSurfaceToCanvas();
+      }
+
+      // Main initialization
+      document.addEventListener('DOMContentLoaded', () => {
+        resizeCanvas();
+        const r = new rive.Rive({
+          src: 'navbar.riv',
+          canvas: document.getElementById('rive-canvas'),
+          autoplay: true,
+          autoBind: true,
+          artboard: 'navbar',
+          stateMachines: 'navbar',
+          layout: new rive.Layout({ fit: rive.Fit.Layout }),
+          onLoad: () => {
+            const vmi = r.viewModelInstance;
+            syncControls(vmi);
+            addControlListeners(vmi);
+            r.resizeDrawingSurfaceToCanvas();
+          }
+        });
+        window.r = r;
+      });
+
+      window.addEventListener('resize', resizeCanvas);
+      window.addEventListener('orientationchange', resizeCanvas);
+    </script>
+  </body>
+</html>

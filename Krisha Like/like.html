@@ -54,9 +54,9 @@
     let currentType = 'recs';
     let currentEntryState = 'unliked';
     // Функция для подгонки canvas под размер контейнера
-    const canvas = document.getElementById('rive-canvas');
+    let canvas = document.getElementById('rive-canvas');
     function resizeCanvas() {
-      const rect = canvas.getBoundingClientRect();
+      let rect = canvas.getBoundingClientRect();
       canvas.width = rect.width;
       canvas.height = rect.height;
       if (window.r) window.r.resizeDrawingSurfaceToCanvas();
@@ -73,7 +73,7 @@
       stateMachines: 'like',
       layout: new rive.Layout({ fit: rive.Fit.Contain }),
       onLoad: () => {
-        const vmi = r.viewModelInstance;
+        let vmi = r.viewModelInstance;
         if (vmi && vmi.enum) {
           vmi.enum('type').value = currentType;
           vmi.enum('entry_state').value = currentEntryState;
@@ -85,7 +85,7 @@
 
     // Helper to apply current enum values
     function applyEnums() {
-      const inputs = r.stateMachineInputs('like');
+      let inputs = r.stateMachineInputs('like');
       inputs.forEach(input => {
         if (input.name === 'type') input.value = currentType;
         if (input.name === 'entry_state') input.value = currentEntryState;
@@ -107,8 +107,8 @@
     // Button event listeners
     document.querySelectorAll('#controls button').forEach(btn => {
       btn.addEventListener('click', () => {
-        const enumName = btn.closest('.group').dataset.enum;
-        const value = btn.dataset.value;
+        let enumName = btn.closest('.group').dataset.enum;
+        let value = btn.dataset.value;
 
         if (enumName === 'type') currentType = value;
         if (enumName === 'entry_state') currentEntryState = value;

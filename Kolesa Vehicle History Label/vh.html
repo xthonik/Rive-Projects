@@ -15,8 +15,8 @@
       position: relative;
     }
     .rive-canvas {
-      width: 200px;
-      height: 300px;
+      width: 130px;
+      height: 44px;
       /* Remove absolute positioning for centering */
       position: static;
       top: unset;
@@ -40,12 +40,12 @@
 
     const initRive = () => {
       r1 = new rive.Rive({
-        src: 'label_android_prod.riv',
+        src: 'label_android_prod_en.riv',
         canvas: document.getElementById("canvas1"),
         autoplay: true,
         // Animation: "Loading Animation",
         artboard: "vehicle_history_label",
-        stateMachines: "animation_ru",
+        stateMachines: "animation_en",
         layout: new rive.Layout({
           fit: rive.Fit.Contain,
           alignment: rive.Alignment.Center,
