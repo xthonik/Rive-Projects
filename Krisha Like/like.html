@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Krisha Like</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+  html,body{height:100%;margin:0}body{display:flex;flex-direction:column;align-items:center;background:#191919}canvas{width:500px;margin-bottom:20px}button{margin:5px;padding:10px;cursor:pointer}</style>
+  <script src="https://unpkg.com/@rive-app/webgl2"></script>
+</head>
+<body>
+  <canvas id="rive-canvas" width="500" height="500"></canvas>
+  <div id="controls" style="background-color: rgb(197, 197, 197);">
+    <div>
+      <span>Type:</span>
+      <button onclick="setEnum('type', 'page')">Page</button>
+      <button onclick="setEnum('type', 'recs')">Recs</button>
+      <button onclick="setEnum('type', 'gallery')">Gallery</button>
+    </div>
+    <div>
+      <span>Entry State:</span>
+      <button onclick="setEnum('entry_state', 'unliked')">Unliked</button>
+      <button onclick="setEnum('entry_state', 'liked')">Liked</button>
+    </div>
+  </div>
+  <script>
+    let r;
+    let selectedEnums = {
+      type: 'page',
+      entry_state: 'unliked'
+    };
+
+    function setEnum(enumName, value) {
+      selectedEnums[enumName] = value;
+      initializeRive();
+    }
+
+    function initializeRive() {
+      if (r) r.cleanup();
+
+      r = new rive.Rive({
+        src: 'https://cdn.jsdelivr.net/gh/xthonik/Rive-Projects@main/Krisha%20Like/like.riv',
+        canvas: document.getElementById('rive-canvas'),
+        autoplay: true,
+        autoBind: true,
+        artboard: 'like',
+        stateMachines: 'like',
+
+        onLoad: function() {
+          let vmi = r.viewModelInstance;
+          vmi.enum('type').value = selectedEnums.type;
+          vmi.enum('entry_state').value = selectedEnums.entry_state;
+          r.resizeDrawingSurfaceToCanvas();
+        }
+      });
+    }
+
+    addEventListener('resize', () => r.resizeDrawingSurfaceToCanvas());
+
+    initializeRive();
+  </script>
+</body>
+</html>
