@@ -7,12 +7,52 @@
   <script src="https://unpkg.com/@rive-app/canvas@latest"></script>
   <style>
     body { display: flex; justify-content: center; align-items: center; height: 100vh; background: #f4f4f4; }
-    #rive-canvas { width: 400px; height: 400px; border: 1px solid #ccc; background: #e0e0e0; }
+    #rive-canvas { width: 400px; height: 400px; border: 1px solid #ccc; background: #eaeaea; }
+    #controls {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      font-family: sans-serif;
+    }
+    #controls .group {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    #controls button {
+      padding: 6px 10px;
+      border: 1px solid #888;
+      background: #fff;
+      cursor: pointer;
+    }
+    #controls button.active {
+      background: #4caf50;
+      color: #fff;
+    }
   </style>
 </head>
 <body>
   <canvas id="rive-canvas" width="400" height="400" style="display:block;"></canvas>
+  <div id="controls">
+    <div class="group" data-enum="type">
+      <span>Type:</span>
+      <button data-value="page">Page</button>
+      <button data-value="recs" class="active">Recs</button>
+      <button data-value="gallery">Gallery</button>
+    </div>
+    <div class="group" data-enum="entry_state">
+      <span>Entry:</span>
+      <button data-value="unliked" class="active">Unliked</button>
+      <button data-value="liked">Liked</button>
+    </div>
+  </div>
     <script>
+    // Current enum selections
+    let currentType = 'recs';
+    let currentEntryState = 'unliked';
     // Функция для подгонки canvas под размер контейнера
     const canvas = document.getElementById('rive-canvas');
     function resizeCanvas() {
@@ -24,9 +64,8 @@
     window.addEventListener('resize', resizeCanvas);
     resizeCanvas();
 
-    // Создаём новый экземпляр Rive с заданными параметрами
     const r = new rive.Rive({
-      src: 'like.riv',
+      src: 'like.riv', 
       canvas: canvas,
       autoplay: true,
       autoBind: true,
@@ -36,17 +75,53 @@
       onLoad: () => {
         const vmi = r.viewModelInstance;
         if (vmi && vmi.enum) {
-          vmi.enum('type').value = 'recs';
-          vmi.enum('entry_state').value = 'liked';
+          vmi.enum('type').value = currentType;
+          vmi.enum('entry_state').value = currentEntryState;
         }
         r.resizeDrawingSurfaceToCanvas();
       }
     });
     window.r = r;
 
-    // Добавляем обработчик события изменения размера окна
+    // Helper to apply current enum values
+    function applyEnums() {
+      const inputs = r.stateMachineInputs('like');
+      inputs.forEach(input => {
+        if (input.name === 'type') input.value = currentType;
+        if (input.name === 'entry_state') input.value = currentEntryState;
+      });
+    }
+
+    // Restart state machine cleanly, then re‑apply enum values
+    function restartSM() {
+      // Reset the state machine to its entry state and start playing
+      r.reset({ stateMachines: 'like', autoplay: true });
+
+      // Re‑apply the currently‑selected enums on the next frame, after
+      // the new state‑machine instance has been created.
+      requestAnimationFrame(() => {
+        applyEnums();
+      });
+    }
+
+    // Button event listeners
+    document.querySelectorAll('#controls button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const enumName = btn.closest('.group').dataset.enum;
+        const value = btn.dataset.value;
+
+        if (enumName === 'type') currentType = value;
+        if (enumName === 'entry_state') currentEntryState = value;
+
+        // Highlight active button
+        btn.closest('.group').querySelectorAll('button').forEach(b => b.classList.toggle('active', b === btn));
+
+        applyEnums();
+        restartSM();
+      });
+    });
+
     window.addEventListener('resize', () =>
-      // При изменении размера окна подгоняем размер анимации под новый размер canvas
       r.resizeDrawingSurfaceToCanvas()
     );
   </script>

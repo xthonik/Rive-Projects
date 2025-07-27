@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Простой Rive Setup</title>
+  <title>Krisha Like</title>
   <script src="https://unpkg.com/@rive-app/canvas@latest"></script>
   <style>
     body { display: flex; justify-content: center; align-items: center; height: 100vh; background: #f4f4f4; }
@@ -25,17 +25,19 @@
     resizeCanvas();
 
     const r = new rive.Rive({
-      src: '',
+      src: 'like.riv', 
       canvas: canvas,
       autoplay: true,
       autoBind: true,
-      artboard: '',
-      stateMachines: '',
+      artboard: 'like',
+      stateMachines: 'like',
       layout: new rive.Layout({ fit: rive.Fit.Contain }),
       onLoad: () => {
         const vmi = r.viewModelInstance;
         if (vmi && vmi.enum) {
-          vmi.enum('language').value = 'kz';
+          vmi.enum('type').value = 'recs';
+          vmi.enum('entry_state').value = 'unliked';
+
         }
         r.resizeDrawingSurfaceToCanvas();
       }
