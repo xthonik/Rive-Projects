@@ -71,6 +71,13 @@
           </select>
         </label>
         <label>
+          Messages Badge Display:
+          <select id="messagesBadgeDisplay">
+            <option value="Show">Show</option>
+            <option value="Hide">Hide</option>
+          </select>
+        </label>
+        <label>
           Messages Badge Count:
           <input type="number" id="messagesBadgeCount" min="0" max="999" value="0" style="width:80px;">
         </label>
@@ -89,6 +96,7 @@
       function syncControls(vmi) {
         document.getElementById('languageSelect').value = vmi.enum('language').value;
         document.getElementById('profileBadgeDisplay').value = vmi.enum('profile_badge_display').value;
+        document.getElementById('messagesBadgeDisplay').value = vmi.enum('messages_badge_display').value;
         document.getElementById('messagesBadgeCount').value = vmi.number('messages_badge_count').value;
         document.getElementById('homeSnowDisplay').value = vmi.enum('home_snow_display').value;
       }
@@ -100,6 +108,9 @@
         });
         document.getElementById('profileBadgeDisplay').addEventListener('change', e => {
           vmi.enum('profile_badge_display').value = e.target.value;
+        });
+        document.getElementById('messagesBadgeDisplay').addEventListener('change', e => {
+          vmi.enum('messages_badge_display').value = e.target.value;
         });
         document.getElementById('messagesBadgeCount').addEventListener('input', e => {
           vmi.number('messages_badge_count').value = Number(e.target.value);

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Krisha Like Demo</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    html, body {
+      height: 100vh;
+      margin: 0;
+      width: 100vw;
+    }
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: #000;
+      min-height: 100vh;
+      min-width: 100vw;
+    }
+    #rive-canvas {
+      width: 100vw;
+      height: 100vh;
+      max-width: 100vw;
+      max-height: 100vh;
+      display: block;
+      margin-bottom: 20px;
+      aspect-ratio: 1 / 1;
+    }
+  </style>
+  <script src="https://unpkg.com/@rive-app/webgl2"></script>
+</head>
+<body>
+  <canvas id="rive-canvas"></canvas>
+  <script>
+    let r;
+    let selectedEnums = {
+      context: 'page',
+      entry_state: 'unliked'
+    };
+
+    function resizeCanvas() {
+      const canvas = document.getElementById('rive-canvas');
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      canvas.width = width;
+      canvas.height = height;
+      if (window.r) window.r.resizeDrawingSurfaceToCanvas();
+    }
+
+    function initializeRive() {
+      if (r) r.cleanup();
+      r = new rive.Rive({
+        src: 'like_demo.riv',
+        canvas: document.getElementById('rive-canvas'),
+        autoplay: true,
+        autoBind: true,
+        artboard: 'demo',
+        stateMachines: 'demo',
+        onLoad: function() {
+          let vmi = r.viewModelInstance.viewModel('demo');
+          r.resizeDrawingSurfaceToCanvas();
+        }
+      });
+    }
+
+    window.addEventListener('resize', resizeCanvas);
+    window.addEventListener('orientationchange', resizeCanvas);
+    document.addEventListener('DOMContentLoaded', () => {
+      resizeCanvas();
+      initializeRive();
+    });
+  </script>
+</body>
+</html>
