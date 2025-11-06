@@ -6,7 +6,19 @@
   <title>Простой Rive Setup</title>
   <script src="https://unpkg.com/@rive-app/webgl2@latest"></script>
   <style>
-    body { display: flex; justify-content: center; align-items: center; height: 100vh; margin: 20px; }
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      box-sizing: border-box;
+    }
     #rive-canvas {
       border-radius: 20px;
       width: 100%;
