@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Star Rating - Rive Animation</title>
+  <script src="https://unpkg.com/@rive-app/webgl2@latest"></script>
+  <style>
+    body { 
+      display: flex; 
+      flex-direction: column;
+      justify-content: center; 
+      align-items: center; 
+      height: 100vh; 
+      background: #ffffff; 
+      gap: 20px;
+    }
+    #rive-canvas { 
+      width: 400px; 
+      height: 400px; 
+      border: 1px solid #ccc; 
+      background: #000000; 
+    }
+    .controls {
+      display: flex;
+      gap: 10px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    .rating-display {
+      font-size: 24px;
+      font-weight: bold;
+      color: #333;
+      padding: 15px 30px;
+      background: #e9ecef;
+      border-radius: 10px;
+      min-width: 200px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="rive-canvas"></canvas>
+  
+  <div class="rating-display" id="rating-display">
+    Current Rating: <span id="rating-value">0</span>
+  </div>
+  
+  <div class="controls">
+    <button onclick="setRating(0)">0 Stars</button>
+    <button onclick="setRating(1)">1 Star</button>
+    <button onclick="setRating(2)">2 Stars</button>
+    <button onclick="setRating(3)">3 Stars</button>
+    <button onclick="setRating(4)">4 Stars</button>
+    <button onclick="setRating(5)">5 Stars</button>
+  </div>
+  
+  <script>
+    const canvas = document.getElementById('rive-canvas');
+    
+    const r = new rive.Rive({
+      src: '../Krisha Ratings/star_rating_prod.riv',
+      canvas: canvas,
+      autoplay: true,
+      autoBind: true,
+      artboard: 'rating_stars',
+      stateMachines: 'rating_sm',
+      layout: new rive.Layout({ fit: rive.Fit.Contain }),
+      onLoad: () => {
+        console.log('Rive file loaded successfully');
+        r.resizeDrawingSurfaceToCanvas();
+        
+        // Display initial rating value
+        const vmi = r.viewModelInstance;
+        if (vmi && vmi.value && vmi.value.rating_value !== undefined) {
+          updateDisplay(vmi.value.rating_value);
+        }
+      },
+      onLoadError: (err) => {
+        console.error('Error loading Rive file:', err);
+      }
+    });
+    
+    window.r = r;
+
+    // Function to update the display
+    function updateDisplay(value) {
+      const displayElement = document.getElementById('rating-value');
+      if (displayElement) {
+        displayElement.textContent = value;
+      }
+    }
+
+    // Function to set rating
+    function setRating(value) {
+      if (!r) {
+        console.error('Rive instance not available');
+        return;
+      }
+      
+      const vmi = r.viewModelInstance;
+      if (!vmi) {
+        console.error('View model instance not available');
+        return;
+      }
+      
+      if (!vmi.value) {
+        console.error('View model value not available');
+        return;
+      }
+      
+      // Set the rating value
+      vmi.value.rating_value = value;
+      
+      // Fire the animation trigger if available
+      if (vmi.value.fire_animation && typeof vmi.value.fire_animation.fire === 'function') {
+        vmi.value.fire_animation.fire();
+      } else {
+        console.warn('Fire animation trigger not available');
+      }
+      
+      // Update the display
+      updateDisplay(value);
+      console.log(`Rating set to ${value} stars`);
+    }
+    
+    // Make setRating available globally
+    window.setRating = setRating;
+
+    // Handle window resize
+    window.addEventListener('resize', () => {
+      r.resizeDrawingSurfaceToCanvas();
+    });
+  </script>
+</body>
+</html>
+
