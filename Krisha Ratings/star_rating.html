@@ -69,12 +69,12 @@
     const canvas = document.getElementById('rive-canvas');
     
     const r = new rive.Rive({
-      src: '../Krisha Ratings/star_rating_prod.riv',
+      src: 'star_rating_prod.riv',
       canvas: canvas,
       autoplay: true,
       autoBind: true,
-      artboard: 'rating_stars',
-      stateMachines: 'rating_sm',
+      artboard: 'stars',
+      stateMachines: 'stars_sm',
       layout: new rive.Layout({ fit: rive.Fit.Contain }),
       onLoad: () => {
         console.log('Rive file loaded successfully');
