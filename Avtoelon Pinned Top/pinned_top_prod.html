@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Простой Rive Setup</title>
+  <script src="https://unpkg.com/@rive-app/webgl2@latest"></script>
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    #rive-canvas {
+      border-radius: 20px;
+      /* width: 100%;
+      height: 100%; */
+      width: 300px;
+      height: 393px;
+      /* background-color: rgb(29, 32, 40); */
+    }
+  </style>
+</head>
+<body>
+  <canvas id="rive-canvas"></canvas>
+  <script>
+    const r = new rive.Rive({
+      src: 'pinned_top_prod.riv',
+      canvas: document.getElementById('rive-canvas'),
+      autoplay: true,
+      autoBind: true,  // Automatically bind default view model instance
+      artboard: 'main',
+      stateMachines: 'main_sm',
+      layout: new rive.Layout({ 
+        fit: rive.Fit.Layout, 
+      }),
+      onLoad: () => {
+        r.resizeDrawingSurfaceToCanvas();
+        
+        const vmi = r.viewModelInstance;
+        
+        // Get the enum property called 'language'
+        const languageProperty = vmi.enum('language');
+        
+        // Set initial value for the language enum
+        languageProperty.value = 'ru';  // Change to your desired language value
+          
+        // Example: Change language on button click or user action
+        // languageProperty.value = 'ru';  // Russian
+        // languageProperty.value = 'kz';  // Kazakh
+      }
+    });
+
+    window.addEventListener('resize', () => {
+      r.resizeDrawingSurfaceToCanvas();
+    });
+  </script>
+</body>
+</html>
