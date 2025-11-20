@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Avtoelon Scroll Gesture</title>
+  <script src="https://unpkg.com/@rive-app/canvas@latest"></script>
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    #rive-canvas {
+      border-radius: 20px;
+      width: 100%;
+      height: 100%;
+      background-color: rgb(27, 31, 43);
+    }
+  </style>
+</head>
+<body>
+  <canvas id="rive-canvas"></canvas>
+  <script>
+    const r = new rive.Rive({
+      src: 'scroll_gesture_prod.riv',
+      canvas: document.getElementById('rive-canvas'),
+      autoplay: true,
+      autoBind: true,
+      artboard: 'scroll_gesture',
+      stateMachines: 'main_sm',
+      layout: new rive.Layout({ fit: rive.Fit.Contain }),
+      onLoad: () => {
+        r.resizeDrawingSurfaceToCanvas();
+      }
+    });
+
+    window.addEventListener('resize', () => {
+      r.resizeDrawingSurfaceToCanvas();
+    });
+  </script>
+</body>
+</html>
