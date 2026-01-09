@@ -3,48 +3,405 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kolesa Plus Onboarding</title>
-  <script src="https://unpkg.com/@rive-app/webgl2@latest"></script>
+  <title>Kolesa Plus Onboarding - All Artboards</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
   <style>
-    html, body {
-      height: 100%;
-      margin: 0;
-      padding: 0;
-      overflow: hidden;
-    }
     body {
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 20px;
-      box-sizing: border-box;
+      height: 100vh;
+      margin: 0;
+      background-color: rgb(26, 123, 235);
+      position: relative;
     }
-    #rive-canvas {
-      width: 360px;
+    .swiper {
+      width: 375px;
+      height: 340px;
+    }
+    .rive-canvas {
+      width: 375px;
       height: 320px;
-      background-color: rgb(29, 32, 40);
+      background-color: transparent;
+    }
+    .artboard-label {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: rgba(0, 0, 0, 0.7);
+      color: white;
+      padding: 5px 10px;
+      border-radius: 5px;
+      font-size: 12px;
+      z-index: 10;
+    }
+    .language-selector {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1000;
+      background-color: rgba(255, 255, 255, 0.9);
+      padding: 10px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    .language-selector label {
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+      margin-right: 8px;
+      color: #333;
+    }
+    .language-selector select {
+      padding: 5px 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background-color: white;
+      font-size: 14px;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
-  <canvas id="rive-canvas"></canvas>
+  <div class="language-selector">
+    <label for="language-select">Язык:</label>
+    <select id="language-select">
+      <option value="ru">Русский</option>
+      <option value="kz">Қазақша</option>
+    </select>
+  </div>
+
+  <div class="swiper">
+    <div class="swiper-wrapper">
+      <div class="swiper-slide">
+        <div class="artboard-label" id="label1">Loading...</div>
+        <canvas id="canvas1" class="rive-canvas"></canvas>
+      </div>
+      <div class="swiper-slide">
+        <div class="artboard-label" id="label2">Loading...</div>
+        <canvas id="canvas2" class="rive-canvas"></canvas>
+      </div>
+      <div class="swiper-slide">
+        <div class="artboard-label" id="label3">Loading...</div>
+        <canvas id="canvas3" class="rive-canvas"></canvas>
+      </div>
+    </div>
+    <div class="swiper-pagination" style="position: fixed; bottom: 20px;"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+  <script src="https://unpkg.com/@rive-app/webgl2@latest"></script>
   <script>
-    const r = new rive.Rive({
-      src: 'plus_onboarding_prod.riv',
-      canvas: document.getElementById('rive-canvas'),
-      autoplay: true,
-      autoBind: true,
-      artboard: 'filter',
-      stateMachines: 'filter_sm',
-      layout: new rive.Layout({ fit: rive.Fit.Contain }),
-      onLoad: () => {
-        r.resizeDrawingSurfaceToCanvas();
-      }
+    let r1, r2, r3;
+    let viewModels = {}; // Для хранения view model инстансов каждого артборда
+
+    const initRive = () => {
+      // Диагностика: проверяем доступные артборды
+      const diagnosticCanvas = document.createElement('canvas');
+      diagnosticCanvas.width = 1;
+      diagnosticCanvas.height = 1;
+
+      const diagnosticRive = new rive.Rive({
+        src: "plus_onboarding_prod.riv",
+        canvas: diagnosticCanvas,
+        onLoad: () => {
+          console.log('=== DIAGNOSTIC INFO ===');
+          console.log('Available artboards:', diagnosticRive.contents?.artboards || 'Not available');
+          console.log('Available animations:', diagnosticRive.animationNames || 'Not available');
+          console.log('Available state machines:', diagnosticRive.stateMachineNames || 'Not available');
+          console.log('Active artboard:', diagnosticRive.activeArtboard?.name || 'Not available');
+          console.log('Contents:', diagnosticRive.contents);
+          console.log('======================');
+
+          // Определяем правильные названия артбордов
+          const allArtboards = diagnosticRive.contents?.artboards || [];
+          const stateMachines = diagnosticRive.stateMachineNames || [];
+
+          console.log('=== AVAILABLE ARTBOARDS ===');
+          allArtboards.forEach((artboard, idx) => {
+            console.log(`${idx}: ${artboard.name}`);
+          });
+          console.log('=== AVAILABLE STATE MACHINES ===');
+          stateMachines.forEach((sm, idx) => {
+            console.log(`${idx}: ${sm}`);
+          });
+
+          // Создаем маппинг: canvas index -> artboard name
+          const artboardMapping = [
+            { canvas: 'canvas1', artboard: 'price_history', stateMachine: 'price_history_sm' },
+            { canvas: 'canvas2', artboard: 'filter', stateMachine: 'filter_sm' },
+            { canvas: 'canvas3', artboard: 'subs_to_search', stateMachine: 'subs_to_search_sm' }
+          ];
+
+          // Создаем экземпляры Rive для каждого canvas
+          artboardMapping.forEach((mapping, index) => {
+            const canvas = document.getElementById(mapping.canvas);
+            const artboardName = mapping.artboard;
+            const stateMachineName = mapping.stateMachine;
+
+            console.log(`Setting up ${mapping.canvas} with artboard: ${artboardName}, state machine: ${stateMachineName}`);
+
+            console.log(`Creating Rive instance for artboard: ${artboardName}, state machine: ${stateMachineName}`);
+
+            const riveInstance = new rive.Rive({
+              src: "plus_onboarding_prod.riv",
+              canvas: canvas,
+              autoplay: true,
+              autoBind: true,
+              artboard: artboardName,
+              stateMachines: stateMachineName,
+              layout: new rive.Layout({ fit: rive.Fit.Contain }),
+              onLoad: () => {
+                riveInstance.resizeDrawingSurfaceToCanvas();
+                console.log(`✅ Artboard "${artboardName}" loaded successfully`);
+
+                // Обновляем метку с названием артборда
+                const labelElement = document.getElementById(`label${index + 1}`);
+                labelElement.textContent = artboardName;
+
+                try {
+                  console.log(`=== VIEW MODEL DIAGNOSTICS FOR ${artboardName} ===`);
+
+                  // Проверяем наличие view model instance
+                  const vmInstance = riveInstance.viewModelInstance;
+                  console.log(`${artboardName} - View model instance exists:`, !!vmInstance);
+
+                  if (vmInstance) {
+                    console.log(`${artboardName} - Accessing view model 'language_vm'...`);
+
+                    try {
+                      // Прямой доступ к view model 'language_vm'
+                      const languageVM = vmInstance.viewModel('language_vm');
+                      console.log(`${artboardName} - 'language_vm' view model found:`, !!languageVM);
+
+                      if (languageVM) {
+                        console.log(`${artboardName} - language_vm properties:`, Object.keys(languageVM));
+
+                        // Проверяем наличие enum метода и параметра language
+                        if (typeof languageVM.enum === 'function') {
+                          try {
+                            const languageEnum = languageVM.enum('language');
+                            console.log(`${artboardName} - Language enum found:`, !!languageEnum);
+
+                            if (languageEnum) {
+                              console.log(`${artboardName} - Language enum value:`, languageEnum.value);
+                              console.log(`${artboardName} - Language enum type:`, typeof languageEnum);
+
+                              // Сохраняем view model для каждого артборда
+                              viewModels[artboardName] = { viewModel: languageVM, languageEnum, vmName: 'language_vm' };
+
+                              // Устанавливаем начальный язык из селектора
+                              const currentLanguage = document.getElementById('language-select').value;
+                              languageEnum.value = currentLanguage;
+                              console.log(`${artboardName} - Initial language set to:`, languageEnum.value);
+                            } else {
+                              console.warn(`${artboardName} - Language enum not found in language_vm`);
+                            }
+                          } catch (enumError) {
+                            console.error(`${artboardName} - Error accessing language enum:`, enumError);
+                          }
+                        } else {
+                          console.warn(`${artboardName} - No enum method in language_vm`);
+                        }
+                      } else {
+                        console.error(`${artboardName} - View model 'language_vm' not found!`);
+                        console.log(`${artboardName} - Available view models check...`);
+
+                        // Попробуем найти все доступные view models для диагностики
+                        try {
+                          const availableVMs = vmInstance._viewModelInstances || {};
+                          console.log(`${artboardName} - Available view model instances:`, Object.keys(availableVMs));
+
+                          Object.keys(availableVMs).forEach(vmName => {
+                            console.log(`${artboardName} - Found view model: ${vmName}`);
+                          });
+                        } catch (e) {
+                          console.log(`${artboardName} - Could not list available view models:`, e.message);
+                        }
+                      }
+                    } catch (vmError) {
+                      console.error(`${artboardName} - Error accessing language_vm:`, vmError);
+                    }
+
+
+                  } else {
+                    console.warn(`${artboardName} - No view model instance available`);
+                  }
+
+                  console.log(`=== END DIAGNOSTICS FOR ${artboardName} ===`);
+                } catch (error) {
+                  console.error(`${artboardName} - View model diagnostics error:`, error);
+                }
+
+                // Сохраняем ссылку на экземпляр
+                if (index === 0) r1 = riveInstance;
+                else if (index === 1) r2 = riveInstance;
+                else if (index === 2) r3 = riveInstance;
+              },
+              onLoadError: (error) => {
+                console.error(`❌ Failed to load artboard "${artboardName}":`, error);
+
+                // Попробуем загрузить без указания артборда
+                const fallbackInstance = new rive.Rive({
+                  src: "plus_onboarding_prod.riv",
+                  canvas: canvas,
+                  autoplay: true,
+                  layout: new rive.Layout({ fit: rive.Fit.Contain }),
+                  onLoad: () => {
+                    console.log(`✅ Fallback: Default artboard loaded for ${canvasId}`);
+                    fallbackInstance.resizeDrawingSurfaceToCanvas();
+
+                    if (index === 0) r1 = fallbackInstance;
+                    else if (index === 1) r2 = fallbackInstance;
+                    else if (index === 2) r3 = fallbackInstance;
+                  },
+                  onLoadError: (fallbackError) => {
+                    console.error(`❌ Fallback failed for ${canvasId}:`, fallbackError);
+                    // Добавим текст ошибки на canvas
+                    const ctx = canvas.getContext('2d');
+                    ctx.fillStyle = 'red';
+                    ctx.font = '14px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(`Error loading ${artboardName}`, canvas.width / 2, canvas.height / 2);
+                  }
+                });
+              }
+            });
+          });
+        },
+        onLoadError: (error) => {
+          console.error('❌ Diagnostic failed:', error);
+        }
+      });
+
+    };
+
+    const swiper = new Swiper('.swiper', {
+      direction: 'horizontal',
+      loop: false,
+      pagination: {
+        el: '.swiper-pagination',
+        clickable: true
+      },
+      on: {
+        slideChange: function () {
+          console.log('Slide changed to:', this.activeIndex);
+          // Перезапуск анимации при переключении слайда
+          const activeRive = [r1, r2, r3][this.activeIndex];
+          if (activeRive && activeRive.play) {
+            activeRive.play();
+          }
+        },
+      },
     });
 
+    window.addEventListener("load", initRive);
+
     window.addEventListener('resize', () => {
-      r.resizeDrawingSurfaceToCanvas();
+      if (r1) r1.resizeDrawingSurfaceToCanvas();
+      if (r2) r2.resizeDrawingSurfaceToCanvas();
+      if (r3) r3.resizeDrawingSurfaceToCanvas();
     });
+
+    // Обработчик изменения языка
+    function changeLanguage(newLanguage) {
+      console.log('=== CHANGING LANGUAGE TO:', newLanguage, '===');
+      console.log('Artboards with language_vm:', Object.keys(viewModels));
+
+      let successCount = 0;
+      let errorCount = 0;
+
+      Object.keys(viewModels).forEach(artboardName => {
+        const vmData = viewModels[artboardName];
+
+        if (vmData && vmData.languageEnum) {
+          try {
+            const oldValue = vmData.languageEnum.value;
+            vmData.languageEnum.value = newLanguage;
+            const newValue = vmData.languageEnum.value;
+
+            console.log(`${artboardName} - Language changed: ${oldValue} → ${newValue}`);
+
+            if (newValue === newLanguage) {
+              successCount++;
+              console.log(`✅ ${artboardName} - Language change successful`);
+            } else {
+              errorCount++;
+              console.error(`❌ ${artboardName} - Language change failed: expected ${newLanguage}, got ${newValue}`);
+            }
+          } catch (error) {
+            errorCount++;
+            console.error(`${artboardName} - Failed to change language:`, error);
+          }
+        } else {
+          errorCount++;
+          console.warn(`${artboardName} - No language enum available`);
+        }
+      });
+
+      console.log(`Language change summary: ${successCount} successful, ${errorCount} errors`);
+      console.log('=== LANGUAGE CHANGE COMPLETE ===');
+    }
+
+    // Диагностическая функция для отображения всех view models
+    function showAllViewModels() {
+      console.log('=== LANGUAGE_VM DIAGNOSTICS ===');
+      console.log('Total artboards with language_vm:', Object.keys(viewModels).length);
+
+      Object.keys(viewModels).forEach(artboardName => {
+        const vmData = viewModels[artboardName];
+        console.log(`\n--- ${artboardName} ---`);
+        console.log('View model name:', vmData?.vmName);
+        console.log('View model exists:', !!vmData?.viewModel);
+        console.log('Language enum exists:', !!vmData?.languageEnum);
+
+        if (vmData?.languageEnum) {
+          console.log('Current language value:', vmData.languageEnum.value);
+          console.log('Language enum type:', typeof vmData.languageEnum);
+
+          // Тестируем изменение языка
+          try {
+            const originalValue = vmData.languageEnum.value;
+            const testValue = originalValue === 'ru' ? 'kz' : 'ru';
+
+            vmData.languageEnum.value = testValue;
+            const changedValue = vmData.languageEnum.value;
+
+            console.log('Language change test:', originalValue, '→', changedValue);
+
+            if (changedValue === testValue) {
+              console.log('✅ Language change works for', artboardName);
+            } else {
+              console.warn('⚠️ Language change may not work for', artboardName);
+            }
+
+            // Возвращаем обратно
+            vmData.languageEnum.value = originalValue;
+            console.log('Restored to:', vmData.languageEnum.value);
+
+          } catch (e) {
+            console.error('❌ Language change test failed for', artboardName, ':', e.message);
+          }
+        } else {
+          console.error('❌ No language enum for', artboardName);
+        }
+      });
+
+      console.log('=== END LANGUAGE_VM DIAGNOSTICS ===');
+    }
+
+    // Добавляем обработчик события на селектор языка
+    document.getElementById('language-select').addEventListener('change', (event) => {
+      const selectedLanguage = event.target.value;
+      changeLanguage(selectedLanguage);
+    });
+
+    // Показываем все view models через 3 секунды после загрузки
+    setTimeout(() => {
+      showAllViewModels();
+    }, 3000);
+
+    console.log('Language selector initialized. Available view models:', Object.keys(viewModels));
   </script>
 </body>
 </html>
