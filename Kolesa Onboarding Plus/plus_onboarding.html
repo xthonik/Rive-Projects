@@ -167,62 +167,129 @@
                   console.log(`${artboardName} - View model instance exists:`, !!vmInstance);
 
                   if (vmInstance) {
-                    console.log(`${artboardName} - Accessing view model 'language_vm'...`);
+                    // Получаем все доступные методы и свойства
+                    const vmKeys = Object.getOwnPropertyNames(Object.getPrototypeOf(vmInstance));
+                    const vmOwnKeys = Object.keys(vmInstance);
+                    console.log(`${artboardName} - VM prototype methods:`, vmKeys);
+                    console.log(`${artboardName} - VM own properties:`, vmOwnKeys);
 
-                    try {
-                      // Прямой доступ к view model 'language_vm'
-                      const languageVM = vmInstance.viewModel('language_vm');
-                      console.log(`${artboardName} - 'language_vm' view model found:`, !!languageVM);
+                    // Проверяем наличие метода viewModel
+                    console.log(`${artboardName} - Has viewModel method:`, typeof vmInstance.viewModel === 'function');
 
-                      if (languageVM) {
-                        console.log(`${artboardName} - language_vm properties:`, Object.keys(languageVM));
+                    // Пытаемся получить именованные view models
+                    if (typeof vmInstance.viewModel === 'function') {
+                      // Проверяем все доступные view models в файле
+                      console.log(`${artboardName} - Checking all available view models...`);
 
-                        // Проверяем наличие enum метода и параметра language
-                        if (typeof languageVM.enum === 'function') {
+                      // Пробуем получить список всех view models
+                      try {
+                        const availableVMs = vmInstance._viewModelInstances || {};
+                        console.log(`${artboardName} - Available view model instances:`, Object.keys(availableVMs));
+
+                        // Проверяем каждый доступный view model
+                        Object.keys(availableVMs).forEach(vmName => {
+                          console.log(`${artboardName} - Checking view model: ${vmName}`);
                           try {
-                            const languageEnum = languageVM.enum('language');
-                            console.log(`${artboardName} - Language enum found:`, !!languageEnum);
+                            const vm = vmInstance.viewModel(vmName);
+                            if (vm) {
+                              console.log(`${artboardName} - View model '${vmName}' properties:`, Object.keys(vm));
 
-                            if (languageEnum) {
-                              console.log(`${artboardName} - Language enum value:`, languageEnum.value);
-                              console.log(`${artboardName} - Language enum type:`, typeof languageEnum);
+                              // Проверяем наличие enum метода
+                              if (typeof vm.enum === 'function') {
+                                try {
+                                  const languageEnum = vm.enum('language');
+                                  if (languageEnum) {
+                                    console.log(`${artboardName} - Found language enum in '${vmName}':`, languageEnum.value);
+                                    viewModels[artboardName] = { viewModel: vm, languageEnum, vmName };
 
-                              // Сохраняем view model для каждого артборда
-                              viewModels[artboardName] = { viewModel: languageVM, languageEnum, vmName: 'language_vm' };
-
-                              // Устанавливаем начальный язык из селектора
-                              const currentLanguage = document.getElementById('language-select').value;
-                              languageEnum.value = currentLanguage;
-                              console.log(`${artboardName} - Initial language set to:`, languageEnum.value);
-                            } else {
-                              console.warn(`${artboardName} - Language enum not found in language_vm`);
+                                    const currentLanguage = document.getElementById('language-select').value;
+                                    languageEnum.value = currentLanguage;
+                                    console.log(`${artboardName} - Initial language set to:`, languageEnum.value);
+                                    return; // Выходим после первого найденного enum
+                                  }
+                                } catch (e) {
+                                  console.log(`${artboardName} - No language enum in '${vmName}'`);
+                                }
+                              }
                             }
-                          } catch (enumError) {
-                            console.error(`${artboardName} - Error accessing language enum:`, enumError);
+                          } catch (e) {
+                            console.log(`${artboardName} - Error accessing view model '${vmName}':`, e.message);
                           }
-                        } else {
-                          console.warn(`${artboardName} - No enum method in language_vm`);
-                        }
-                      } else {
-                        console.error(`${artboardName} - View model 'language_vm' not found!`);
-                        console.log(`${artboardName} - Available view models check...`);
+                        });
+                      } catch (e) {
+                        console.log(`${artboardName} - Error getting view model list:`, e.message);
+                      }
 
-                        // Попробуем найти все доступные view models для диагностики
+                      // Если не нашли view model, пробуем использовать properties напрямую
+                      if (!viewModels[artboardName]) {
+                        console.log(`${artboardName} - Trying direct properties access...`);
+
                         try {
-                          const availableVMs = vmInstance._viewModelInstances || {};
-                          console.log(`${artboardName} - Available view model instances:`, Object.keys(availableVMs));
+                          // Проверяем наличие enum напрямую
+                          const languageEnum = vmInstance.enum('language');
+                          if (languageEnum) {
+                            console.log(`${artboardName} - Found language enum in root VM:`, languageEnum.value);
+                            viewModels[artboardName] = { viewModel: vmInstance, languageEnum, vmName: 'root' };
 
-                          Object.keys(availableVMs).forEach(vmName => {
-                            console.log(`${artboardName} - Found view model: ${vmName}`);
-                          });
+                            const currentLanguage = document.getElementById('language-select').value;
+                            languageEnum.value = currentLanguage;
+                            console.log(`${artboardName} - Initial language set to:`, languageEnum.value);
+                          } else {
+                            console.warn(`${artboardName} - No language enum found anywhere`);
+                          }
                         } catch (e) {
-                          console.log(`${artboardName} - Could not list available view models:`, e.message);
+                          console.warn(`${artboardName} - Error accessing root enum:`, e.message);
                         }
                       }
-                    } catch (vmError) {
-                      console.error(`${artboardName} - Error accessing language_vm:`, vmError);
                     }
 
+                    // Также проверим state machines как альтернативу
+                    console.log(`${artboardName} - Available state machines:`, riveInstance.stateMachineNames);
+
+                    // Проверим inputs в state machines
+                    riveInstance.stateMachineNames?.forEach(smName => {
+                      try {
+                        const inputs = riveInstance.stateMachineInputs(smName);
+                        console.log(`${artboardName} - State machine '${smName}' inputs:`, inputs?.map(input => ({
+                          name: input.name,
+                          type: input.type,
+                          value: input.value
+                        })));
+
+                        // Ищем input с именем, похожим на language
+                        const languageInput = inputs?.find(input =>
+                          input.name.toLowerCase().includes('lang') ||
+                          input.name.toLowerCase().includes('language') ||
+                          input.name.toLowerCase().includes('locale')
+                        );
+
+                        if (languageInput) {
+                          console.log(`${artboardName} - Found language-like input in '${smName}':`, languageInput);
+                          viewModels[artboardName] = {
+                            viewModel: null,
+                            languageEnum: null,
+                            stateMachineInput: languageInput,
+                            stateMachineName: smName,
+                            inputType: 'stateMachine'
+                          };
+
+                          // Пробуем установить значение
+                          try {
+                            const currentLanguage = document.getElementById('language-select').value;
+                            if (languageInput.type === 0) { // Number
+                              languageInput.value = currentLanguage === 'ru' ? 0 : 1;
+                            } else if (languageInput.type === 1) { // Boolean
+                              languageInput.value = currentLanguage === 'ru';
+                            }
+                            console.log(`${artboardName} - State machine language input set to:`, languageInput.value);
+                          } catch (e) {
+                            console.error(`${artboardName} - Error setting state machine input:`, e);
+                          }
+                        }
+                      } catch (e) {
+                        console.error(`${artboardName} - Error accessing state machine '${smName}':`, e);
+                      }
+                    });
 
                   } else {
                     console.warn(`${artboardName} - No view model instance available`);
@@ -306,36 +373,63 @@
     // Обработчик изменения языка
     function changeLanguage(newLanguage) {
       console.log('=== CHANGING LANGUAGE TO:', newLanguage, '===');
-      console.log('Artboards with language_vm:', Object.keys(viewModels));
+      console.log('Available view models:', Object.keys(viewModels));
 
       let successCount = 0;
       let errorCount = 0;
 
       Object.keys(viewModels).forEach(artboardName => {
         const vmData = viewModels[artboardName];
+        console.log(`${artboardName} - View model data:`, vmData);
 
-        if (vmData && vmData.languageEnum) {
-          try {
+        try {
+          if (vmData.inputType === 'stateMachine' && vmData.stateMachineInput) {
+            // Работаем с state machine input
+            const input = vmData.stateMachineInput;
+            const oldValue = input.value;
+
+            if (input.type === 0) { // Number
+              input.value = newLanguage === 'ru' ? 0 : 1;
+            } else if (input.type === 1) { // Boolean
+              input.value = newLanguage === 'ru';
+            } else {
+              // Для других типов пробуем установить как строку
+              input.value = newLanguage;
+            }
+
+            const newValue = input.value;
+            console.log(`${artboardName} - State machine input changed: ${oldValue} → ${newValue}`);
+
+            if (newValue !== oldValue) {
+              successCount++;
+              console.log(`✅ ${artboardName} - State machine language change successful`);
+            } else {
+              errorCount++;
+              console.warn(`⚠️ ${artboardName} - State machine input value didn't change`);
+            }
+
+          } else if (vmData && vmData.languageEnum) {
+            // Работаем с view model enum
             const oldValue = vmData.languageEnum.value;
             vmData.languageEnum.value = newLanguage;
             const newValue = vmData.languageEnum.value;
 
-            console.log(`${artboardName} - Language changed: ${oldValue} → ${newValue}`);
+            console.log(`${artboardName} - View model enum changed: ${oldValue} → ${newValue}`);
 
             if (newValue === newLanguage) {
               successCount++;
-              console.log(`✅ ${artboardName} - Language change successful`);
+              console.log(`✅ ${artboardName} - View model language change successful`);
             } else {
               errorCount++;
-              console.error(`❌ ${artboardName} - Language change failed: expected ${newLanguage}, got ${newValue}`);
+              console.error(`❌ ${artboardName} - View model language change failed: expected ${newLanguage}, got ${newValue}`);
             }
-          } catch (error) {
+          } else {
             errorCount++;
-            console.error(`${artboardName} - Failed to change language:`, error);
+            console.warn(`${artboardName} - No language control available for change`);
           }
-        } else {
+        } catch (error) {
           errorCount++;
-          console.warn(`${artboardName} - No language enum available`);
+          console.error(`${artboardName} - Failed to change language:`, error);
         }
       });
 
@@ -345,49 +439,65 @@
 
     // Диагностическая функция для отображения всех view models
     function showAllViewModels() {
-      console.log('=== LANGUAGE_VM DIAGNOSTICS ===');
-      console.log('Total artboards with language_vm:', Object.keys(viewModels).length);
+      console.log('=== COMPLETE VIEW MODEL DIAGNOSTICS ===');
+      console.log('Total view models found:', Object.keys(viewModels).length);
+      console.log('View models details:', viewModels);
 
       Object.keys(viewModels).forEach(artboardName => {
         const vmData = viewModels[artboardName];
         console.log(`\n--- ${artboardName} ---`);
-        console.log('View model name:', vmData?.vmName);
+        console.log('Control type:', vmData?.inputType || 'viewModel');
+        console.log('View model name:', vmData?.vmName || 'unknown');
         console.log('View model exists:', !!vmData?.viewModel);
         console.log('Language enum exists:', !!vmData?.languageEnum);
+        console.log('State machine input exists:', !!vmData?.stateMachineInput);
 
-        if (vmData?.languageEnum) {
+        if (vmData?.inputType === 'stateMachine' && vmData?.stateMachineInput) {
+          const input = vmData.stateMachineInput;
+          console.log('State machine name:', vmData.stateMachineName);
+          console.log('Input name:', input.name);
+          console.log('Input type:', input.type);
+          console.log('Current input value:', input.value);
+
+          // Проверяем, можем ли мы изменить значение
+          try {
+            const oldValue = input.value;
+            if (input.type === 0) { // Number
+              input.value = input.value === 0 ? 1 : 0;
+            } else if (input.type === 1) { // Boolean
+              input.value = !input.value;
+            }
+            console.log('State machine test change:', oldValue, '→', input.value);
+            // Возвращаем обратно
+            input.value = oldValue;
+          } catch (e) {
+            console.error('State machine test change failed:', e.message);
+          }
+        }
+
+        if (vmData?.languageEnum && vmData?.inputType !== 'stateMachine') {
           console.log('Current language value:', vmData.languageEnum.value);
           console.log('Language enum type:', typeof vmData.languageEnum);
 
-          // Тестируем изменение языка
+          // Проверяем, можем ли мы изменить значение
           try {
-            const originalValue = vmData.languageEnum.value;
-            const testValue = originalValue === 'ru' ? 'kz' : 'ru';
-
+            const testValue = vmData.languageEnum.value === 'ru' ? 'kz' : 'ru';
             vmData.languageEnum.value = testValue;
-            const changedValue = vmData.languageEnum.value;
-
-            console.log('Language change test:', originalValue, '→', changedValue);
-
-            if (changedValue === testValue) {
-              console.log('✅ Language change works for', artboardName);
-            } else {
-              console.warn('⚠️ Language change may not work for', artboardName);
-            }
-
+            console.log('View model test change successful:', vmData.languageEnum.value);
             // Возвращаем обратно
-            vmData.languageEnum.value = originalValue;
-            console.log('Restored to:', vmData.languageEnum.value);
-
+            vmData.languageEnum.value = vmData.languageEnum.value === 'ru' ? 'kz' : 'ru';
           } catch (e) {
-            console.error('❌ Language change test failed for', artboardName, ':', e.message);
+            console.error('View model test change failed:', e.message);
           }
-        } else {
-          console.error('❌ No language enum for', artboardName);
+        }
+
+        if (vmData?.viewModel) {
+          console.log('View model properties:', Object.keys(vmData.viewModel));
+          console.log('View model methods:', Object.getOwnPropertyNames(Object.getPrototypeOf(vmData.viewModel)));
         }
       });
 
-      console.log('=== END LANGUAGE_VM DIAGNOSTICS ===');
+      console.log('=== END COMPLETE DIAGNOSTICS ===');
     }
 
     // Добавляем обработчик события на селектор языка
