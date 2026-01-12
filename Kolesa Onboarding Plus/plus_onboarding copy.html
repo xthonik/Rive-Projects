@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kolesa Plus Onboarding - All Artboards</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: rgb(26, 123, 235);
+      position: relative;
+    }
+    .swiper {
+      width: 375px;
+      height: 340px;
+    }
+    .rive-canvas {
+      width: 375px;
+      height: 320px;
+      background-color: transparent;
+    }
+    .artboard-label {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: rgba(0, 0, 0, 0.7);
+      color: white;
+      padding: 5px 10px;
+      border-radius: 5px;
+      font-size: 12px;
+      z-index: 10;
+    }
+    .language-selector {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1000;
+      background-color: rgba(255, 255, 255, 0.9);
+      padding: 10px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    .language-selector label {
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+      margin-right: 8px;
+      color: #333;
+    }
+    .language-selector select {
+      padding: 5px 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background-color: white;
+      font-size: 14px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="language-selector">
+    <label for="language-select">Язык:</label>
+    <select id="language-select">
+      <option value="ru">Русский</option>
+      <option value="kz">Қазақша</option>
+    </select>
+  </div>
+
+  <div class="swiper">
+    <div class="swiper-wrapper">
+      <div class="swiper-slide">
+        <div class="artboard-label" id="label1">Loading...</div>
+        <canvas id="canvas1" class="rive-canvas"></canvas>
+      </div>
+      <div class="swiper-slide">
+        <div class="artboard-label" id="label2">Loading...</div>
+        <canvas id="canvas2" class="rive-canvas"></canvas>
+      </div>
+      <div class="swiper-slide">
+        <div class="artboard-label" id="label3">Loading...</div>
+        <canvas id="canvas3" class="rive-canvas"></canvas>
+      </div>
+    </div>
+    <div class="swiper-pagination" style="position: fixed; bottom: 20px;"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+  <script src="https://unpkg.com/@rive-app/webgl2@latest"></script>
+  <script>
+    let r1, r2, r3;
+    let viewModels = {}; // Для хранения view model инстансов каждого артборда
+
+    const initRive = () => {
+      // Создаем маппинг: canvas index -> artboard name
+      const artboardMapping = [
+        { canvas: 'canvas1', artboard: 'price_history', stateMachine: 'price_history_sm' },
+        { canvas: 'canvas2', artboard: 'filter', stateMachine: 'filter_sm' },
+        { canvas: 'canvas3', artboard: 'subs_to_search', stateMachine: 'subs_to_search_sm' }
+      ];
+
+      // Создаем экземпляры Rive для каждого canvas
+      artboardMapping.forEach((mapping, index) => {
+        const canvas = document.getElementById(mapping.canvas);
+        const artboardName = mapping.artboard;
+        const stateMachineName = mapping.stateMachine;
+
+        const riveInstance = new rive.Rive({
+          src: "plus_onboarding_prod.riv",
+          canvas: canvas,
+          autoplay: true,
+          autoBind: true,
+          artboard: artboardName,
+          stateMachines: stateMachineName,
+          layout: new rive.Layout({ fit: rive.Fit.Contain }),
+              onLoad: () => {
+                riveInstance.resizeDrawingSurfaceToCanvas();
+                console.log(`✅ Artboard "${artboardName}" loaded successfully`);
+
+                // Обновляем метку с названием артборда
+                const labelElement = document.getElementById(`label${index + 1}`);
+                labelElement.textContent = artboardName;
+
+                // Получаем view model
+                try {
+                  console.log(`${artboardName} - Rive instance properties:`, Object.keys(riveInstance));
+                  console.log(`${artboardName} - Rive instance has viewModelInstance:`, 'viewModelInstance' in riveInstance);
+
+                  const vmInstance = riveInstance.viewModelInstance;
+                  console.log(`${artboardName} - View model instance exists:`, !!vmInstance);
+
+                  if (vmInstance) {
+                    console.log(`${artboardName} - VM instance type:`, typeof vmInstance);
+                    console.log(`${artboardName} - VM instance properties:`, Object.getOwnPropertyNames(Object.getPrototypeOf(vmInstance)));
+                  }
+
+              if (vmInstance && typeof vmInstance.viewModel === 'function') {
+                console.log(`${artboardName} - Has viewModel method:`, typeof vmInstance.viewModel === 'function');
+
+                // Проверяем доступные view models
+                try {
+                  const availableVMs = vmInstance._viewModelInstances || {};
+                  console.log(`${artboardName} - Available view model instances:`, Object.keys(availableVMs));
+                } catch (e) {
+                  console.log(`${artboardName} - Could not get available view models`);
+                }
+
+                // Проверяем state machines как альтернативу
+                const stateMachineNames = riveInstance.stateMachineNames || [];
+                console.log(`${artboardName} - Available state machines:`, stateMachineNames);
+
+                let foundControl = false;
+
+                // Сначала пробуем получить view model "def_instance"
+                try {
+                  console.log(`${artboardName} - Trying to get def_instance view model...`);
+                  const defInstance = vmInstance.viewModel('def_instance');
+
+                  if (defInstance) {
+                    console.log(`${artboardName} - def_instance found, checking for language enum...`);
+
+                    // Проверяем, есть ли в def_instance enum language
+                    if (typeof defInstance.enum === 'function') {
+                      const enumNames = ['language', 'lang', 'locale'];
+                      let languageEnum = null;
+                      let foundEnumName = null;
+
+                      for (const enumName of enumNames) {
+                        try {
+                          languageEnum = defInstance.enum(enumName);
+                          if (languageEnum) {
+                            console.log(`${artboardName} - Found enum '${enumName}' in def_instance:`, languageEnum.value);
+                            foundEnumName = enumName;
+                            break;
+                          }
+                        } catch (e) {
+                          console.log(`${artboardName} - Enum '${enumName}' not found in def_instance`);
+                        }
+                      }
+
+                      if (languageEnum) {
+                        viewModels[artboardName] = { viewModel: defInstance, languageEnum, vmName: 'def_instance', enumName: foundEnumName };
+                        foundControl = true;
+
+                        // Устанавливаем начальный язык
+                        const currentLanguage = document.getElementById('language-select').value;
+                        languageEnum.value = currentLanguage;
+                        console.log(`${artboardName} - Initial language set to:`, languageEnum.value);
+                      }
+                    }
+
+                    // Если в def_instance нет enum, попробуем получить main_vm через def_instance
+                    if (!foundControl) {
+                      console.log(`${artboardName} - No enum in def_instance, trying to get main_vm through def_instance...`);
+
+                      try {
+                        // Проверяем, есть ли у def_instance метод для получения main_vm
+                        if (typeof defInstance.viewModel === 'function') {
+                          const mainVM = defInstance.viewModel('main_vm');
+                          if (mainVM && typeof mainVM.enum === 'function') {
+                            console.log(`${artboardName} - main_vm found through def_instance`);
+
+                            const enumNames = ['language', 'lang', 'locale'];
+                            let languageEnum = null;
+                            let foundEnumName = null;
+
+                            for (const enumName of enumNames) {
+                              try {
+                                languageEnum = mainVM.enum(enumName);
+                                if (languageEnum) {
+                                  console.log(`${artboardName} - Found enum '${enumName}' in main_vm:`, languageEnum.value);
+                                  foundEnumName = enumName;
+                                  break;
+                                }
+                              } catch (e) {
+                                console.log(`${artboardName} - Enum '${enumName}' not found in main_vm`);
+                              }
+                            }
+
+                            if (languageEnum) {
+                              viewModels[artboardName] = { viewModel: mainVM, languageEnum, vmName: 'main_vm', enumName: foundEnumName };
+                              foundControl = true;
+
+                              // Устанавливаем начальный язык
+                              const currentLanguage = document.getElementById('language-select').value;
+                              languageEnum.value = currentLanguage;
+                              console.log(`${artboardName} - Initial language set to:`, languageEnum.value);
+                            }
+                          }
+                        }
+                      } catch (e) {
+                        console.log(`${artboardName} - Error accessing main_vm through def_instance:`, e.message);
+                      }
+                    }
+                  } else {
+                    console.log(`${artboardName} - def_instance not found, falling back to other methods`);
+                  }
+                } catch (e) {
+                  console.log(`${artboardName} - Error accessing def_instance:`, e.message);
+                }
+
+                // Если def_instance не сработал, пробуем старый метод со всеми view models
+                if (!foundControl) {
+                  try {
+                    const availableVMs = vmInstance._viewModelInstances || {};
+                    console.log(`${artboardName} - Available view model instances:`, Object.keys(availableVMs));
+
+                    // Проверяем каждый доступный view model
+                    Object.keys(availableVMs).forEach(vmName => {
+                      if (foundControl) return; // Уже нашли, выходим
+
+                      console.log(`${artboardName} - Checking view model: ${vmName}`);
+                      try {
+                        const vm = vmInstance.viewModel(vmName);
+                        if (vm) {
+                          console.log(`${artboardName} - View model '${vmName}' exists, checking for enum...`);
+
+                          // Проверяем наличие enum метода
+                          if (typeof vm.enum === 'function') {
+                            const enumNames = ['language', 'lang', 'locale'];
+                            let languageEnum = null;
+                            let foundEnumName = null;
+
+                            for (const enumName of enumNames) {
+                              try {
+                                languageEnum = vm.enum(enumName);
+                                if (languageEnum) {
+                                  console.log(`${artboardName} - Found enum '${enumName}' in '${vmName}':`, languageEnum.value);
+                                  foundEnumName = enumName;
+                                  break;
+                                }
+                              } catch (e) {
+                                console.log(`${artboardName} - Enum '${enumName}' not found in '${vmName}'`);
+                              }
+                            }
+
+                            if (languageEnum) {
+                              viewModels[artboardName] = { viewModel: vm, languageEnum, vmName, enumName: foundEnumName };
+                              foundControl = true;
+
+                              // Устанавливаем начальный язык
+                              const currentLanguage = document.getElementById('language-select').value;
+                              languageEnum.value = currentLanguage;
+                              console.log(`${artboardName} - Initial language set to:`, languageEnum.value);
+                            }
+                          }
+                        }
+                      } catch (e) {
+                        console.log(`${artboardName} - Error accessing view model '${vmName}':`, e.message);
+                      }
+                    });
+                  } catch (e) {
+                    console.log(`${artboardName} - Error getting available view models:`, e.message);
+                  }
+                }
+
+                // Если view models не сработали, пробуем получить enum напрямую из vmInstance
+                if (!foundControl) {
+                  console.log(`${artboardName} - Trying direct enum access from vmInstance`);
+                  try {
+                    // Пробуем разные варианты имени enum
+                    const enumNames = ['language', 'lang', 'locale'];
+                    let languageEnum = null;
+
+                    for (const enumName of enumNames) {
+                      try {
+                        languageEnum = vmInstance.enum(enumName);
+                        if (languageEnum) {
+                          console.log(`${artboardName} - Found enum '${enumName}' in root vmInstance:`, languageEnum.value);
+                          viewModels[artboardName] = { languageEnum, vmName: 'root', enumName };
+                          foundControl = true;
+
+                          // Устанавливаем начальный язык
+                          const currentLanguage = document.getElementById('language-select').value;
+                          languageEnum.value = currentLanguage;
+                          console.log(`${artboardName} - Initial language set to:`, languageEnum.value);
+                          break;
+                        }
+                      } catch (e) {
+                        console.log(`${artboardName} - Enum '${enumName}' not found in root vmInstance`);
+                      }
+                    }
+                  } catch (e) {
+                    console.log(`${artboardName} - Direct enum access failed:`, e.message);
+                  }
+                }
+
+                // Если view model не сработал, пробуем state machine inputs
+                if (!foundControl) {
+                  stateMachineNames.forEach(smName => {
+                    try {
+                      const inputs = riveInstance.stateMachineInputs(smName);
+                      console.log(`${artboardName} - State machine '${smName}' inputs:`, inputs?.map(input => ({
+                        name: input.name,
+                        type: input.type,
+                        value: input.value
+                      })));
+
+                      // Ищем input с именем, похожим на language
+                      const languageInput = inputs?.find(input =>
+                        input.name.toLowerCase().includes('lang') ||
+                        input.name.toLowerCase().includes('language') ||
+                        input.name.toLowerCase().includes('locale')
+                      );
+
+                      if (languageInput) {
+                        console.log(`${artboardName} - Found language-like input in '${smName}':`, languageInput);
+                        viewModels[artboardName] = {
+                          stateMachineInput: languageInput,
+                          stateMachineName: smName,
+                          inputType: 'stateMachine'
+                        };
+                        foundControl = true;
+
+                        // Пробуем установить значение
+                        try {
+                          const currentLanguage = document.getElementById('language-select').value;
+                          if (languageInput.type === 0) { // Number
+                            languageInput.value = currentLanguage === 'ru' ? 0 : 1;
+                          } else if (languageInput.type === 1) { // Boolean
+                            languageInput.value = currentLanguage === 'ru';
+                          } else {
+                            languageInput.value = currentLanguage;
+                          }
+                          console.log(`${artboardName} - State machine language input set to:`, languageInput.value);
+                        } catch (e) {
+                          console.error(`${artboardName} - Error setting state machine input:`, e);
+                        }
+                      }
+                    } catch (e) {
+                      console.error(`${artboardName} - Error accessing state machine '${smName}':`, e);
+                    }
+                  });
+                }
+
+                  if (!foundControl) {
+                    console.warn(`${artboardName} - No language control found (neither view model nor state machine)`);
+                  }
+                } else {
+                  console.warn(`${artboardName} - No view model instance or viewModel method`);
+                }
+              } catch (error) {
+                console.error(`${artboardName} - Error accessing view model:`, error);
+              }
+
+            // Сохраняем ссылку на экземпляр
+            if (index === 0) r1 = riveInstance;
+            else if (index === 1) r2 = riveInstance;
+            else if (index === 2) r3 = riveInstance;
+          },
+          onLoadError: (error) => {
+            console.error(`❌ Failed to load artboard "${artboardName}":`, error);
+
+            // Попробуем загрузить без указания артборда
+            const fallbackInstance = new rive.Rive({
+              src: "plus_onboarding_prod.riv",
+              canvas: canvas,
+              autoplay: true,
+              layout: new rive.Layout({ fit: rive.Fit.Contain }),
+              onLoad: () => {
+                console.log(`✅ Fallback: Default artboard loaded for ${mapping.canvas}`);
+                fallbackInstance.resizeDrawingSurfaceToCanvas();
+
+                if (index === 0) r1 = fallbackInstance;
+                else if (index === 1) r2 = fallbackInstance;
+                else if (index === 2) r3 = fallbackInstance;
+              },
+              onLoadError: (fallbackError) => {
+                console.error(`❌ Fallback failed for ${mapping.canvas}:`, fallbackError);
+                // Добавим текст ошибки на canvas
+                const ctx = canvas.getContext('2d');
+                ctx.fillStyle = 'red';
+                ctx.font = '14px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(`Error loading ${artboardName}`, canvas.width / 2, canvas.height / 2);
+              }
+            });
+          }
+        });
+      });
+    };
+
+    const swiper = new Swiper('.swiper', {
+      direction: 'horizontal',
+      loop: false,
+      pagination: {
+        el: '.swiper-pagination',
+        clickable: true
+      },
+      on: {
+        slideChange: function () {
+          console.log('Slide changed to:', this.activeIndex);
+          // Перезапуск анимации при переключении слайда
+          const activeRive = [r1, r2, r3][this.activeIndex];
+          if (activeRive && activeRive.play) {
+            activeRive.play();
+          }
+        },
+      },
+    });
+
+    window.addEventListener("load", initRive);
+
+    window.addEventListener('resize', () => {
+      if (r1) r1.resizeDrawingSurfaceToCanvas();
+      if (r2) r2.resizeDrawingSurfaceToCanvas();
+      if (r3) r3.resizeDrawingSurfaceToCanvas();
+    });
+
+    // Обработчик изменения языка
+    function changeLanguage(newLanguage) {
+      console.log('=== CHANGING LANGUAGE TO:', newLanguage, '===');
+      console.log('Available view models:', Object.keys(viewModels));
+
+      Object.keys(viewModels).forEach(artboardName => {
+        const vmData = viewModels[artboardName];
+        console.log(`${artboardName} - View model data:`, vmData);
+
+        try {
+          if (vmData.inputType === 'stateMachine' && vmData.stateMachineInput) {
+            // Работаем с state machine input
+            const input = vmData.stateMachineInput;
+            const oldValue = input.value;
+
+            if (input.type === 0) { // Number
+              input.value = newLanguage === 'ru' ? 0 : 1;
+            } else if (input.type === 1) { // Boolean
+              input.value = newLanguage === 'ru';
+            } else {
+              // Для других типов устанавливаем как строку
+              input.value = newLanguage;
+            }
+
+            const newValue = input.value;
+            console.log(`${artboardName} - State machine input changed: ${oldValue} → ${newValue}`);
+
+          } else if (vmData && vmData.languageEnum) {
+            // Работаем с view model enum
+            const oldValue = vmData.languageEnum.value;
+            vmData.languageEnum.value = newLanguage;
+            const newValue = vmData.languageEnum.value;
+            console.log(`${artboardName} - View model enum changed: ${oldValue} → ${newValue}`);
+          } else {
+            console.warn(`${artboardName} - No language control available`);
+          }
+        } catch (error) {
+          console.error(`${artboardName} - Failed to change language:`, error);
+        }
+      });
+
+      console.log('=== LANGUAGE CHANGE COMPLETE ===');
+    }
+
+    // Добавляем обработчик события на селектор языка
+    document.getElementById('language-select').addEventListener('change', (event) => {
+      const selectedLanguage = event.target.value;
+      changeLanguage(selectedLanguage);
+    });
+
+    console.log('Language selector initialized');
+  </script>
+</body>
+</html>
