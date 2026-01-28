@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rive Web Example – map_pin_prod.riv</title>
+    <!-- Rive WebGL2 runtime from CDN (supports Vector Feathering) -->
+    <script src="https://unpkg.com/@rive-app/webgl2@latest"></script>
+    <style>
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        background: #333;
+        font-family: sans-serif;
+        color: #eee;
+        gap: 1rem;
+      }
+      .canvas-wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+      }
+      canvas {
+        width: 500px;
+        height: 500px;
+        border: 1px solid #555;
+        background-color: #00000000;
+      }
+      #controls-block {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+        padding: 1rem;
+        background: #444;
+        border-radius: 8px;
+      }
+      #controls-block label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+      }
+      #controls-block input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="canvas-wrapper">
+      <canvas id="rive-canvas" width="500" height="500"></canvas>
+      <div id="controls-block">
+        <label>
+          <input type="checkbox" id="adressErrorCheck" />
+          adressError
+        </label>
+        <label>
+          <input type="checkbox" id="isDraggingCheck" />
+          isDragging
+        </label>
+      </div>
+    </div>
+    <script>
+      // ⚠️ REPLACE THIS with your own .riv URL ⚠️
+      const RIVE_FILE_URL = './map_pin_prod.riv';
+      
+      // Available Artboards: Pin
+      const canvas = document.getElementById('rive-canvas');
+      // State Machine Inputs (this state machine has no inputs, but here's the pattern)
+
+      const riveInstance = new rive.Rive({
+        src: RIVE_FILE_URL,
+        canvas: canvas,
+        artboard: 'Pin',
+        stateMachines: 'PinSM',
+        autoplay: true,
+        autoBind: true, // Enable Data Binding
+        onLoad: () => {
+          // Initialize inputs for state machine: "PinSM"
+          const inputs = riveInstance.stateMachineInputs("PinSM");
+          if (inputs) {
+            // Example: If this state machine had inputs, you would access them like this:
+            // const myInput = inputs.find(i => i.name === "inputName");
+            // if (myInput) {
+            //   myInput.value = 1.0;  // For number/boolean inputs
+            //   myInput.fire();       // For trigger inputs
+            // }
+          }
+
+          // =========================================================
+          // 🧠 Data Binding (View Model) — управление adressError, isDragging
+          // =========================================================
+          const vm = riveInstance.viewModelInstance;
+          if (vm) {
+            const adressError = vm.boolean('adressError');
+            const isDragging = vm.boolean('isDragging');
+
+            // Синхронизация UI с текущими значениями View Model
+            document.getElementById('adressErrorCheck').checked = !!adressError.value;
+            document.getElementById('isDraggingCheck').checked = !!isDragging.value;
+
+            // Обновление View Model при изменении чекбоксов
+            document.getElementById('adressErrorCheck').addEventListener('change', (e) => {
+              adressError.value = e.target.checked;
+            });
+            document.getElementById('isDraggingCheck').addEventListener('change', (e) => {
+              isDragging.value = e.target.checked;
+            });
+          }
+        },
+      });
+      window.addEventListener('resize', () => { riveInstance.resizeDrawingSurfaceToCanvas(); });
+    </script>
+  </body>
+</html>
