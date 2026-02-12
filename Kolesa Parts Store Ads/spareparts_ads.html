@@ -1,10 +1,10 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kolesa Parts Store Ads — Recs Artboard</title>
+    <title>Kolesa Spareparts Ads — Recs & Chart</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@rive-app/canvas@latest"></script>
     <style>
@@ -17,15 +17,15 @@
         }
 
         :root {
-            --bg: #0f1117;
-            --surface: #1a1d27;
-            --surface-hover: #222632;
-            --border: #2a2e3a;
+            --bg: #1D2129;
+            --surface: #2B313D;
+            --surface-hover: #32394a;
+            --border: #3d4659;
             --text: #e4e6ed;
             --text-muted: #8b8fa3;
-            --accent: #6c5ce7;
-            --accent-light: #a29bfe;
-            --success: #00cec9;
+            --accent: #1A7BEB;
+            --accent-light: #6EB1FF;
+            --success: #1A7BEB;
             --warning: #fdcb6e;
             --danger: #ff7675;
             --radius: 12px;
@@ -53,16 +53,13 @@
             gap: 14px;
             padding: 16px 24px;
             border-bottom: 1px solid var(--border);
-            background: linear-gradient(180deg, rgba(108, 92, 231, .08) 0%, transparent 100%);
+            background: var(--surface);
         }
 
         .header h1 {
             font-size: 18px;
             font-weight: 700;
-            background: linear-gradient(135deg, var(--accent-light), var(--success));
-            background-clip: text;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: var(--accent-light);
         }
 
         .header .badge {
@@ -70,7 +67,7 @@
             font-weight: 600;
             padding: 3px 10px;
             border-radius: 20px;
-            background: rgba(108, 92, 231, .18);
+            background: rgba(26, 123, 235, .1);
             color: var(--accent-light);
             letter-spacing: .5px;
         }
@@ -86,25 +83,107 @@
         .canvas-panel {
             flex: 1;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
+            gap: 24px;
             padding: 24px;
             position: relative;
-            background:
-                radial-gradient(ellipse at 30% 50%, rgba(108, 92, 231, .06) 0%, transparent 60%),
-                radial-gradient(ellipse at 70% 50%, rgba(0, 206, 201, .04) 0%, transparent 60%);
+            background: var(--bg);
+            overflow-y: auto;
         }
 
-        #rive-canvas {
-            width: 100%;
-            max-width: 600px;
-            max-height: 80vh;
-            aspect-ratio: 9 / 16;
+        .artboard-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .artboard-label {
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            padding: 4px 12px;
+            border-radius: 20px;
+            background: rgba(26, 123, 235, .08);
+        }
+
+        .rive-canvas {
+            width: 360px;
+            height: 640px;
             border-radius: var(--radius);
             background: var(--surface);
             box-shadow:
                 0 0 0 1px var(--border),
                 0 20px 60px rgba(0, 0, 0, .4);
+        }
+
+        /* ── Canvas Size Sliders ────────────────── */
+        .canvas-size-section {
+            padding: 12px 0;
+        }
+
+        .canvas-size-section h4 {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--accent-light);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+        }
+
+        .size-slider-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 6px 0;
+        }
+
+        .size-slider-row label {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-muted);
+            min-width: 16px;
+        }
+
+        .size-slider-row input[type="range"] {
+            flex: 1;
+            height: 4px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: var(--border);
+            border-radius: 2px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .size-slider-row input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: var(--accent);
+            cursor: pointer;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, .3);
+        }
+
+        .size-slider-row .size-value {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text);
+            min-width: 42px;
+            text-align: right;
+            font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+        }
+
+        .size-dimensions {
+            text-align: center;
+            font-size: 11px;
+            color: var(--text-muted);
+            padding: 4px 0 0;
+            font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
         }
 
         /* ── Sidebar Controls ──────────────────── */
@@ -223,12 +302,12 @@
         }
 
         .type-boolean {
-            background: rgba(0, 206, 201, .12);
+            background: rgba(26, 123, 235, .12);
             color: var(--success);
         }
 
         .type-number {
-            background: rgba(108, 92, 231, .15);
+            background: rgba(26, 123, 235, .1);
             color: var(--accent-light);
         }
 
@@ -243,12 +322,12 @@
         }
 
         .type-enum {
-            background: rgba(162, 155, 254, .12);
+            background: rgba(26, 123, 235, .1);
             color: var(--accent-light);
         }
 
         .type-color {
-            background: rgba(0, 206, 201, .12);
+            background: rgba(26, 123, 235, .12);
             color: var(--success);
         }
 
@@ -258,7 +337,7 @@
         }
 
         .type-viewmodel {
-            background: rgba(108, 92, 231, .15);
+            background: rgba(26, 123, 235, .1);
             color: var(--accent-light);
         }
 
@@ -274,27 +353,28 @@
             min-width: 0;
         }
 
-        /* ── Nesting Indicator ──────────────────── */
-        .nest-indicator {
+        /* ── Artboard Indicator ───────────────────── */
+        .artboard-indicator {
             display: flex;
             align-items: center;
             gap: 4px;
             padding: 8px 0 4px;
             font-size: 11px;
             font-weight: 600;
-            color: var(--accent-light);
+            color: var(--success);
             letter-spacing: .3px;
         }
 
-        .nest-indicator .dot {
+        .artboard-indicator .dot {
             width: 6px;
             height: 6px;
             border-radius: 50%;
-            background: var(--accent);
+            background: var(--success);
         }
 
         /* ── Toggle Switch ──────────────────────── */
         .toggle {
+            display: inline-block;
             position: relative;
             width: 44px;
             height: 24px;
@@ -536,6 +616,18 @@
         }
 
         /* ── Responsive ─────────────────────────── */
+        @media (max-width: 1200px) {
+            .canvas-panel {
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .rive-canvas {
+                max-width: 300px;
+                max-height: 40vh;
+            }
+        }
+
         @media (max-width: 860px) {
             .main {
                 flex-direction: column;
@@ -551,11 +643,13 @@
 
             .canvas-panel {
                 padding: 16px;
+                flex-direction: column;
+                gap: 12px;
             }
 
-            #rive-canvas {
+            .rive-canvas {
                 max-width: 100%;
-                max-height: 40vh;
+                max-height: 35vh;
             }
         }
     </style>
@@ -564,14 +658,20 @@
 <body>
     <!-- Header -->
     <div class="header">
-        <h1>Kolesa Parts Store Ads</h1>
-        <span class="badge">RECS ARTBOARD</span>
+        <h1>Kolesa Spareparts Ads</h1>
     </div>
 
     <!-- Main Layout -->
     <div class="main">
         <div class="canvas-panel">
-            <canvas id="rive-canvas"></canvas>
+            <div class="artboard-wrapper">
+                <span class="artboard-label">Chart</span>
+                <canvas id="rive-canvas-chart" class="rive-canvas" style="width:328px;height:200px"></canvas>
+            </div>
+            <div class="artboard-wrapper">
+                <span class="artboard-label">Recs</span>
+                <canvas id="rive-canvas-recs" class="rive-canvas" style="width:328px;height:440px"></canvas>
+            </div>
         </div>
 
         <div class="sidebar" id="sidebar">
@@ -609,7 +709,10 @@
         }
 
         // ─── Globals ────────────────────────────────
-        let riveInstance = null;
+        const RIV_FILE = 'spareparts_ads_prod.riv';
+        let riveRecs = null;
+        let riveChart = null;
+        let fileEnums = null;
         const controlsContainer = document.getElementById('controls-container');
 
         // ─── Helpers ────────────────────────────────
@@ -648,10 +751,10 @@
             return row;
         }
 
-        function addNestIndicator(container, path) {
+        function addArtboardIndicator(container, artboardName) {
             const ind = document.createElement('div');
-            ind.className = 'nest-indicator';
-            ind.innerHTML = `<span class="dot"></span> ${path}`;
+            ind.className = 'artboard-indicator';
+            ind.innerHTML = `<span class="dot"></span> Bound to: ${artboardName}`;
             container.appendChild(ind);
         }
 
@@ -743,29 +846,44 @@
             return wrapper;
         }
 
-        // ─── Recursively discover VM properties ─────
-        function discoverVMProperties(vmi, container, pathPrefix = '') {
+        // ─── Get enum values from file-level enums ──
+        function getEnumValuesFromFile(propertyName, enumProp) {
+            if (!fileEnums || !Array.isArray(fileEnums)) return [];
+            for (const e of fileEnums) {
+                // Match by property name first
+                if (e.name && e.name.toLowerCase() === propertyName.toLowerCase() && e.values) {
+                    return e.values;
+                }
+                // Fallback: match by current value
+                if (e.values && e.values.includes(enumProp?.value)) {
+                    return e.values;
+                }
+            }
+            return [];
+        }
+
+        // ─── Discover VM properties (flat, no nesting) ─────
+        // allVMIs is an array of all view model instances to sync changes across
+        function discoverVMProperties(vmi, container, allVMIs = [], pathPrefix = '') {
             let count = 0;
 
-            // Try to list properties via the `properties` getter
             let propList = null;
             try {
                 propList = vmi.properties;
                 if (propList && propList.length > 0) {
-                    log(`  Found ${propList.length} properties via .properties at "${pathPrefix || 'root'}"`, 'success');
+                    log(`  Found ${propList.length} properties in ControlsVM`, 'success');
                 }
             } catch (e) {
-                log(`  .properties not available at "${pathPrefix || 'root'}": ${e.message}`, 'warn');
+                log(`  .properties not available: ${e.message}`, 'warn');
             }
 
             if (propList && propList.length > 0) {
-                // We have a property list — iterate and create controls
                 propList.forEach(prop => {
                     const name = prop.name || prop;
                     const type = (prop.type || '').toString().toLowerCase();
                     const fullPath = pathPrefix ? `${pathPrefix}/${name}` : name;
 
-                    log(`  Property: "${name}" type="${type}" path="${fullPath}"`, 'info');
+                    log(`  Property: "${name}" type="${type}"`, 'info');
 
                     let widget = null;
                     let typeLabel = type;
@@ -778,7 +896,7 @@
                                 if (p) {
                                     typeClass = 'type-boolean';
                                     widget = makeBooleanToggle(p.value, val => {
-                                        p.value = val;
+                                        syncBooleanToAll(allVMIs, name, val);
                                         log(`${fullPath} = ${val}`, 'info');
                                     });
                                 }
@@ -810,25 +928,23 @@
                                 const p = vmi.enum(name);
                                 if (p) {
                                     typeClass = 'type-enum';
-                                    // Try to get available enum values
                                     let opts = [];
                                     try {
                                         if (typeof p.options === 'function') opts = p.options();
                                         else if (Array.isArray(p.options)) opts = p.options;
                                     } catch (e) { }
                                     if (opts.length === 0) {
-                                        // Try to get values from the file-level enums
                                         opts = getEnumValuesFromFile(name, p);
                                     }
                                     if (opts.length > 0) {
                                         widget = makeEnumSelect(p.value, opts, val => {
-                                            p.value = val;
-                                            log(`${fullPath} = "${val}"`, 'info');
+                                            syncEnumToAll(allVMIs, name, val);
+                                            log(`${fullPath} = "${val}" (synced to all artboards)`, 'info');
                                         });
                                     } else {
                                         widget = makeTextInput(p.value, val => {
-                                            p.value = val;
-                                            log(`${fullPath} = "${val}"`, 'info');
+                                            syncEnumToAll(allVMIs, name, val);
+                                            log(`${fullPath} = "${val}" (synced to all artboards)`, 'info');
                                         });
                                     }
                                 }
@@ -857,21 +973,7 @@
                                 }
                                 break;
                             }
-                            case 'viewmodel':
-                            case 'view model':
-                            case 'viewModel': {
-                                // Recurse into nested view model
-                                const nestedVMI = vmi.viewModel(name);
-                                if (nestedVMI) {
-                                    addNestIndicator(container, `↳ ${name} (ViewModel)`);
-                                    const nestedCount = discoverVMProperties(nestedVMI, container, fullPath);
-                                    count += nestedCount;
-                                    log(`  Nested VM "${name}" has ${nestedCount} properties`, 'info');
-                                }
-                                return; // don't add a control row for the VM itself
-                            }
                             default: {
-                                // Try each accessor type
                                 const tried = tryAllAccessors(vmi, name, fullPath);
                                 if (tried) {
                                     widget = tried.widget;
@@ -890,12 +992,31 @@
                     }
                 });
             } else {
-                // No .properties — try brute-force discovery by probing accessor methods
-                log(`  No .properties at "${pathPrefix || 'root'}", trying known property names…`, 'warn');
-                count += probeKnownProperties(vmi, container, pathPrefix);
+                // No .properties — try known property names
+                log(`  No .properties available, trying known property names…`, 'warn');
+                count += probeKnownProperties(vmi, container, allVMIs, pathPrefix);
             }
 
             return count;
+        }
+
+        // ─── Sync helpers: update property on ALL VMIs ──
+        function syncEnumToAll(allVMIs, name, val) {
+            allVMIs.forEach(v => {
+                try {
+                    const p = v.enum(name);
+                    if (p) p.value = val;
+                } catch (e) { /* this VMI may not have this enum */ }
+            });
+        }
+
+        function syncBooleanToAll(allVMIs, name, val) {
+            allVMIs.forEach(v => {
+                try {
+                    const p = v.boolean(name);
+                    if (p) p.value = val;
+                } catch (e) { /* this VMI may not have this boolean */ }
+            });
         }
 
         // ─── Try all accessor methods for a property ──
@@ -928,24 +1049,15 @@
                 } catch (e) { /* skip */ }
             }
 
-            // Also try nested viewModel
-            if (typeof vmi.viewModel === 'function') {
-                try {
-                    const nested = vmi.viewModel(name);
-                    if (nested) return { isVM: true, nested, name };
-                } catch (e) { /* skip */ }
-            }
-
             return null;
         }
 
         // ─── Fallback: probe known property names ───
-        function probeKnownProperties(vmi, container, pathPrefix) {
-            // Known names for the RecsVM based on user description
+        function probeKnownProperties(vmi, container, allVMIs, pathPrefix) {
             const knownNames = [
-                'propertyOfAnimVM', 'animLanguage',
+                'language', 'playChartAnimation',
                 // General common names
-                'language', 'lang', 'locale', 'title', 'subtitle', 'text', 'label', 'description', 'name',
+                'lang', 'locale', 'title', 'subtitle', 'text', 'label', 'description', 'name',
                 'price', 'old_price', 'new_price', 'discount', 'count', 'rating',
                 'is_active', 'is_visible', 'liked', 'active', 'visible', 'enabled', 'selected',
                 'color', 'bg_color', 'theme', 'state', 'status', 'type', 'category',
@@ -960,95 +1072,50 @@
 
             let count = 0;
 
-            // First, try to access nested viewModel "propertyOfAnimVM" directly
-            if (typeof vmi.viewModel === 'function') {
-                try {
-                    const animVM = vmi.viewModel('propertyOfAnimVM');
-                    if (animVM) {
-                        log(`  ✓ Found nested VM: "propertyOfAnimVM"`, 'success');
-                        addNestIndicator(container, '↳ propertyOfAnimVM (ViewModel)');
-
-                        // Now access animLanguage enum inside it
-                        try {
-                            const animLangEnum = animVM.enum('animLanguage');
-                            if (animLangEnum) {
-                                log(`  ✓ Found enum: "animLanguage" = "${animLangEnum.value}"`, 'success');
-                                let opts = ['ru', 'en', 'kk']; // Known values
-                                try {
-                                    const runtimeOpts = typeof animLangEnum.options === 'function' ? animLangEnum.options() : animLangEnum.options;
-                                    if (runtimeOpts && runtimeOpts.length > 0) opts = runtimeOpts;
-                                } catch (e) { }
-                                const sel = makeEnumSelect(animLangEnum.value, opts, val => {
-                                    animLangEnum.value = val;
-                                    log(`propertyOfAnimVM/animLanguage = "${val}"`, 'info');
-                                });
-                                container.appendChild(createControlRow('animLanguage', 'enum', 'type-enum', sel));
-                                count++;
-                            }
-                        } catch (e) {
-                            log(`  Error accessing animLanguage: ${e.message}`, 'error');
-                        }
-
-                        // Also discover any other properties in the nested VM
-                        try {
-                            const nestedProps = animVM.properties;
-                            if (nestedProps && nestedProps.length > 0) {
-                                nestedProps.forEach(prop => {
-                                    const pName = prop.name || prop;
-                                    if (pName === 'animLanguage') return; // already handled
-                                    const fullPath = `propertyOfAnimVM/${pName}`;
-                                    const tried = tryAllAccessors(animVM, pName, fullPath);
-                                    if (tried && !tried.isVM) {
-                                        container.appendChild(createControlRow(pName, tried.typeLabel, tried.typeClass, tried.widget));
-                                        count++;
-                                    }
-                                });
-                            }
-                        } catch (e) { /* .properties may not be available */ }
-
-                        return count; // We found the nested VM, no need for brute force
-                    }
-                } catch (e) {
-                    log(`  propertyOfAnimVM not found via viewModel(): ${e.message}`, 'warn');
+            // Try language enum explicitly first — syncs to ALL artboards (Recs + Chart)
+            try {
+                const langEnum = vmi.enum('language');
+                if (langEnum) {
+                    log(`  ✓ Found enum: "language" = "${langEnum.value}"`, 'success');
+                    let opts = ['ru', 'en', 'kk']; // Known values
+                    try {
+                        const runtimeOpts = typeof langEnum.options === 'function' ? langEnum.options() : langEnum.options;
+                        if (runtimeOpts && runtimeOpts.length > 0) opts = runtimeOpts;
+                    } catch (e) { }
+                    const sel = makeEnumSelect(langEnum.value, opts, val => {
+                        syncEnumToAll(allVMIs, 'language', val);
+                        log(`language = "${val}" (synced to all artboards)`, 'info');
+                    });
+                    container.appendChild(createControlRow('language', 'enum', 'type-enum', sel));
+                    count++;
                 }
+            } catch (e) {
+                log(`  Error accessing language: ${e.message}`, 'error');
             }
 
-            // Also try path-based access: "propertyOfAnimVM/animLanguage"
+            // Try playChartAnimation boolean explicitly — syncs to ALL artboards
             try {
-                const enumByPath = vmi.enum('propertyOfAnimVM/animLanguage');
-                if (enumByPath) {
-                    log(`  ✓ Found enum by path: "propertyOfAnimVM/animLanguage" = "${enumByPath.value}"`, 'success');
-                    addNestIndicator(container, '↳ propertyOfAnimVM / animLanguage');
-                    const opts = ['ru', 'en', 'kk'];
-                    const sel = makeEnumSelect(enumByPath.value, opts, val => {
-                        enumByPath.value = val;
-                        log(`propertyOfAnimVM/animLanguage = "${val}"`, 'info');
+                const chartBool = vmi.boolean('playChartAnimation');
+                if (chartBool) {
+                    log(`  ✓ Found boolean: "playChartAnimation" = ${chartBool.value}`, 'success');
+                    const toggle = makeBooleanToggle(chartBool.value, val => {
+                        syncBooleanToAll(allVMIs, 'playChartAnimation', val);
+                        log(`playChartAnimation = ${val} (synced to all artboards)`, 'info');
                     });
-                    container.appendChild(createControlRow('animLanguage', 'enum', 'type-enum', sel));
+                    container.appendChild(createControlRow('playChartAnimation', 'boolean', 'type-boolean', toggle));
                     count++;
-                    return count;
                 }
-            } catch (e) { /* skip */ }
+            } catch (e) {
+                log(`  Error accessing playChartAnimation: ${e.message}`, 'error');
+            }
 
-            // Brute force: try each known name with all accessor methods
+            // Brute force remaining names
             knownNames.forEach(name => {
-                if (name === 'propertyOfAnimVM' || name === 'animLanguage') return; // already tried
-
-                // Try as viewModel first
-                if (typeof vmi.viewModel === 'function') {
-                    try {
-                        const nested = vmi.viewModel(name);
-                        if (nested) {
-                            addNestIndicator(container, `↳ ${name} (ViewModel)`);
-                            count += discoverVMProperties(nested, container, pathPrefix ? `${pathPrefix}/${name}` : name);
-                            return;
-                        }
-                    } catch (e) { /* skip */ }
-                }
+                if (name === 'language' || name === 'playChartAnimation') return; // already handled
 
                 const fullPath = pathPrefix ? `${pathPrefix}/${name}` : name;
                 const tried = tryAllAccessors(vmi, name, fullPath);
-                if (tried && !tried.isVM) {
+                if (tried) {
                     log(`  ✓ Found: "${name}" (${tried.typeLabel})`, 'success');
                     container.appendChild(createControlRow(name, tried.typeLabel, tried.typeClass, tried.widget));
                     count++;
@@ -1058,27 +1125,14 @@
             return count;
         }
 
-        // ─── Get enum values from file-level enums ──
-        let fileEnums = null;
-        function getEnumValuesFromFile(propertyName, enumProp) {
-            if (!fileEnums || !Array.isArray(fileEnums)) return [];
-            // Try to match the property to a file-level enum
-            for (const e of fileEnums) {
-                if (e.values && e.values.includes(enumProp?.value)) {
-                    return e.values;
-                }
-            }
-            return [];
-        }
-
         // ─── Build State Machine Inputs UI ──────────
-        function buildSMInputsUI(riveInst, smName) {
+        function buildSMInputsUI(riveInst, smName, artboardLabel) {
             const inputs = riveInst.stateMachineInputs(smName);
             if (!inputs || inputs.length === 0) {
-                log(`  No inputs for SM "${smName}"`, 'warn');
+                log(`  No inputs for SM "${smName}" (${artboardLabel})`, 'warn');
                 return null;
             }
-            const section = createSection(`⚙ State Machine: ${smName}`, `sm-${smName}`);
+            const section = createSection(`⚙ SM: ${smName} (${artboardLabel})`, `sm-${artboardLabel}-${smName}`);
             const body = section.querySelector('.section-body');
 
             inputs.forEach(input => {
@@ -1144,11 +1198,11 @@
         }
 
         // ─── Rive Events ────────────────────────────
-        function setupRiveEvents(riveInst) {
+        function setupRiveEvents(riveInst, label) {
             try {
                 if (rive?.EventType?.RiveEvent) {
                     riveInst.on(rive.EventType.RiveEvent, ev => {
-                        log(`🎯 RiveEvent: "${ev?.data?.name || 'unknown'}"`, 'success');
+                        log(`🎯 RiveEvent (${label}): "${ev?.data?.name || 'unknown'}"`, 'success');
                     });
                 }
             } catch (e) { }
@@ -1156,8 +1210,7 @@
 
         // ─── Initialize ─────────────────────────────
         function initRive() {
-            log('Initializing Rive for Recs artboard…');
-            const canvas = document.getElementById('rive-canvas');
+            log('Initializing Rive — loading both Recs & Chart artboards…');
 
             // Diagnostic load to discover artboards & state machines
             const diagCanvas = document.createElement('canvas');
@@ -1165,7 +1218,7 @@
             diagCanvas.height = 1;
 
             const diagRive = new rive.Rive({
-                src: 'part_store_ads_rc1.riv',
+                src: RIV_FILE,
                 canvas: diagCanvas,
                 onLoad: () => {
                     log('Diagnostic load complete', 'success');
@@ -1174,28 +1227,7 @@
                     const artboards = contents?.artboards || [];
 
                     log(`Found ${artboards.length} artboard(s)`, 'info');
-
-                    // Find "Recs" artboard
-                    const recsAB = artboards.find(ab =>
-                        ab.name.toLowerCase().includes('recs') || ab.name === 'Recs'
-                    );
-
-                    if (!recsAB) {
-                        log('❌ "Recs" artboard not found! Available:', 'error');
-                        artboards.forEach(ab => log(`  • "${ab.name}"`, 'info'));
-
-                        // Fallback: log all artboards and use first one
-                        const fallbackAB = artboards[0];
-                        if (fallbackAB) {
-                            log(`Using fallback artboard: "${fallbackAB.name}"`, 'warn');
-                            loadArtboard(fallbackAB, canvas, artboards);
-                        }
-                        return;
-                    }
-
-                    log(`✓ Found Recs artboard: "${recsAB.name}"`, 'success');
-                    const sms = recsAB.stateMachines || [];
-                    sms.forEach(sm => log(`  SM: "${sm.name || sm}"`, 'info'));
+                    artboards.forEach(ab => log(`  • "${ab.name}"`, 'info'));
 
                     // Get file-level enums
                     try {
@@ -1208,7 +1240,62 @@
                         log(`Could not get file-level enums: ${e.message}`, 'warn');
                     }
 
-                    loadArtboard(recsAB, canvas, artboards);
+                    // Find artboards
+                    const recsAB = artboards.find(ab => ab.name === 'Recs' || ab.name.toLowerCase().includes('recs'));
+                    const chartAB = artboards.find(ab => ab.name === 'Chart' || ab.name.toLowerCase().includes('chart'));
+
+                    if (!recsAB) {
+                        log('⚠ "Recs" artboard not found! Available artboards listed above.', 'error');
+                    } else {
+                        log(`✓ Found Recs artboard: "${recsAB.name}"`, 'success');
+                    }
+                    if (!chartAB) {
+                        log('⚠ "Chart" artboard not found! Available artboards listed above.', 'error');
+                    } else {
+                        log(`✓ Found Chart artboard: "${chartAB.name}"`, 'success');
+                    }
+
+                    // Cleanup diagnostic instance
+                    diagRive.cleanup();
+
+                    let loadedCount = 0;
+                    const totalToLoad = (recsAB ? 1 : 0) + (chartAB ? 1 : 0);
+
+                    function onArtboardReady() {
+                        loadedCount++;
+                        if (loadedCount >= totalToLoad) {
+                            // Remove loading spinner
+                            const loadingEl = document.getElementById('loading-state');
+                            if (loadingEl) loadingEl.remove();
+
+                            // Build shared controls from ControlsVM
+                            buildControlsVM();
+                        }
+                    }
+
+                    // Load Recs artboard
+                    if (recsAB) {
+                        loadArtboard(recsAB, document.getElementById('rive-canvas-recs'), 'Recs', (inst) => {
+                            riveRecs = inst;
+                            onArtboardReady();
+                        });
+                    }
+
+                    // Load Chart artboard
+                    if (chartAB) {
+                        loadArtboard(chartAB, document.getElementById('rive-canvas-chart'), 'Chart', (inst) => {
+                            riveChart = inst;
+                            onArtboardReady();
+                        });
+                    }
+
+                    if (totalToLoad === 0) {
+                        log('❌ Neither Recs nor Chart artboard found!', 'error');
+                        const loadingEl = document.getElementById('loading-state');
+                        if (loadingEl) {
+                            loadingEl.innerHTML = '<div class="empty-state"><div class="icon">❌</div><p>No matching artboards found in the .riv file</p></div>';
+                        }
+                    }
                 },
                 onLoadError: err => {
                     log('❌ Diagnostic load failed: ' + err, 'error');
@@ -1216,102 +1303,384 @@
             });
         }
 
-        function loadArtboard(artboardDef, canvas, allArtboards) {
+        function loadArtboard(artboardDef, canvas, label, onDone) {
             const artboardName = artboardDef.name;
             const smNames = (artboardDef.stateMachines || []).map(sm => sm.name || sm);
             const firstSM = smNames[0];
 
-            log(`Loading artboard: "${artboardName}", SM: "${firstSM || 'none'}"`, 'info');
+            log(`Loading ${label} artboard: "${artboardName}", SM: "${firstSM || 'none'}"`, 'info');
 
-            riveInstance = new rive.Rive({
-                src: 'part_store_ads_rc1.riv',
+            const riveInst = new rive.Rive({
+                src: RIV_FILE,
                 canvas: canvas,
                 autoplay: true,
                 autoBind: true,
                 artboard: artboardName,
                 stateMachines: firstSM || undefined,
                 layout: new rive.Layout({
-                    fit: rive.Fit.Contain,
-                    alignment: rive.Alignment.Center
+                    fit: rive.Fit.Layout,
+                    alignment: rive.Alignment.Center,
+                    layoutScaleFactor: 1
                 }),
                 onLoad: () => {
-                    log(`✅ Artboard "${artboardName}" loaded!`, 'success');
-                    riveInstance.resizeDrawingSurfaceToCanvas();
+                    log(`✅ ${label} artboard "${artboardName}" loaded!`, 'success');
+                    riveInst.resizeDrawingSurfaceToCanvas();
 
-                    // Remove loading spinner
-                    const loadingEl = document.getElementById('loading-state');
-                    if (loadingEl) loadingEl.remove();
-
-                    // ── File Info ──
-                    const fileInfo = buildFileInfoUI(riveInstance);
-                    if (fileInfo) controlsContainer.appendChild(fileInfo);
-
-                    // ── State Machine Inputs ──
-                    const allSMNames = riveInstance.stateMachineNames || smNames;
+                    // Build SM inputs for this artboard
+                    const allSMNames = riveInst.stateMachineNames || smNames;
                     allSMNames.forEach(smn => {
-                        const smSection = buildSMInputsUI(riveInstance, smn);
+                        const smSection = buildSMInputsUI(riveInst, smn, label);
                         if (smSection) controlsContainer.appendChild(smSection);
                     });
 
-                    // ── View Model Properties (the main goal) ──
-                    const vmi = riveInstance.viewModelInstance;
-                    log(`View model instance: ${vmi ? 'FOUND' : 'NOT FOUND'}`, vmi ? 'success' : 'error');
+                    // Events
+                    setupRiveEvents(riveInst, label);
 
-                    if (vmi) {
-                        // Log prototype methods for diagnostics
-                        try {
-                            const proto = Object.getPrototypeOf(vmi);
-                            const methods = Object.getOwnPropertyNames(proto).filter(m => m !== 'constructor');
-                            log(`VMI methods: ${methods.join(', ')}`, 'info');
-                        } catch (e) { }
-
-                        // Try to get the VM property list
-                        try {
-                            const props = vmi.properties;
-                            if (props) {
-                                log(`VMI .properties: ${JSON.stringify(props.map(p => ({
-                                    name: p.name || p,
-                                    type: p.type || 'unknown'
-                                })))}`, 'info');
-                            }
-                        } catch (e) {
-                            log(`VMI .properties error: ${e.message}`, 'warn');
-                        }
-
-                        const vmSection = createSection('🔗 RecsVM — Data-Bound Properties', 'vm-section');
-                        const vmBody = vmSection.querySelector('.section-body');
-
-                        const propCount = discoverVMProperties(vmi, vmBody);
-
-                        if (propCount === 0) {
-                            const empty = document.createElement('div');
-                            empty.className = 'empty-state';
-                            empty.innerHTML = '<div class="icon">🔍</div><p>No properties discovered automatically.<br>Check the console for diagnostics.</p>';
-                            vmBody.appendChild(empty);
-                        } else {
-                            log(`Total data-bound properties found: ${propCount}`, 'success');
-                        }
-
-                        controlsContainer.appendChild(vmSection);
-                    }
-
-                    // ── Events ──
-                    setupRiveEvents(riveInstance);
-                    log('All controls built.', 'success');
+                    onDone(riveInst);
                 },
                 onLoadError: err => {
-                    log(`❌ Failed to load: ${err}`, 'error');
-                    const loadingEl = document.getElementById('loading-state');
-                    if (loadingEl) {
-                        loadingEl.innerHTML = '<div class="empty-state"><div class="icon">❌</div><p>Failed to load Rive file</p></div>';
-                    }
+                    log(`❌ Failed to load ${label}: ${err}`, 'error');
+                    onDone(null);
                 }
             });
         }
 
+        // ─── Build shared ControlsVM UI ──────────────
+        function buildControlsVM() {
+            log('Building ControlsVM controls…', 'info');
+
+            // File Info (use whichever instance is available)
+            const anyInst = riveRecs || riveChart;
+            if (anyInst) {
+                const fileInfo = buildFileInfoUI(anyInst);
+                if (fileInfo) controlsContainer.appendChild(fileInfo);
+            }
+
+            // ── Canvas Size Sliders (Responsive Layout) ──
+            function buildCanvasSizeSliders(label, canvasId, riveInst) {
+                const canvas = document.getElementById(canvasId);
+                if (!canvas) return null;
+
+                const section = createSection(`📐 ${label} — Canvas Size`, `size-${label.toLowerCase()}`);
+                const body = section.querySelector('.section-body');
+
+                const wrapper = document.createElement('div');
+                wrapper.className = 'canvas-size-section';
+
+                const currentW = canvas.clientWidth || 360;
+                const currentH = canvas.clientHeight || 640;
+
+                // Dimensions readout
+                const dims = document.createElement('div');
+                dims.className = 'size-dimensions';
+                dims.textContent = `${currentW} × ${currentH}`;
+
+                function resizeCanvas(w, h) {
+                    canvas.style.width = w + 'px';
+                    canvas.style.height = h + 'px';
+                    dims.textContent = `${w} × ${h}`;
+                    if (riveInst) {
+                        riveInst.resizeDrawingSurfaceToCanvas();
+                    }
+                }
+
+                // Width slider
+                const wRow = document.createElement('div');
+                wRow.className = 'size-slider-row';
+                const wLabel = document.createElement('label');
+                wLabel.textContent = 'W';
+                const wSlider = document.createElement('input');
+                wSlider.type = 'range';
+                wSlider.min = '100';
+                wSlider.max = '800';
+                wSlider.value = currentW;
+                const wVal = document.createElement('span');
+                wVal.className = 'size-value';
+                wVal.textContent = currentW + 'px';
+                wSlider.addEventListener('input', () => {
+                    const w = parseInt(wSlider.value);
+                    wVal.textContent = w + 'px';
+                    resizeCanvas(w, parseInt(hSlider.value));
+                });
+                wRow.append(wLabel, wSlider, wVal);
+
+                // Height slider
+                const hRow = document.createElement('div');
+                hRow.className = 'size-slider-row';
+                const hLabel = document.createElement('label');
+                hLabel.textContent = 'H';
+                const hSlider = document.createElement('input');
+                hSlider.type = 'range';
+                hSlider.min = '100';
+                hSlider.max = '1200';
+                hSlider.value = currentH;
+                const hVal = document.createElement('span');
+                hVal.className = 'size-value';
+                hVal.textContent = currentH + 'px';
+                hSlider.addEventListener('input', () => {
+                    const h = parseInt(hSlider.value);
+                    hVal.textContent = h + 'px';
+                    resizeCanvas(parseInt(wSlider.value), h);
+                });
+                hRow.append(hLabel, hSlider, hVal);
+
+                wrapper.append(wRow, hRow, dims);
+                body.appendChild(wrapper);
+                return section;
+            }
+
+            const chartSliders = buildCanvasSizeSliders('Chart', 'rive-canvas-chart', riveChart);
+            if (chartSliders) controlsContainer.appendChild(chartSliders);
+
+            const recsSliders = buildCanvasSizeSliders('Recs', 'rive-canvas-recs', riveRecs);
+            if (recsSliders) controlsContainer.appendChild(recsSliders);
+
+            // Get the viewModelInstance from each artboard — they share ControlsVM
+            const vmiRecs = riveRecs?.viewModelInstance;
+            const vmiChart = riveChart?.viewModelInstance;
+
+            log(`Recs VMI: ${vmiRecs ? 'FOUND' : 'NOT FOUND'}`, vmiRecs ? 'success' : 'warn');
+            log(`Chart VMI: ${vmiChart ? 'FOUND' : 'NOT FOUND'}`, vmiChart ? 'success' : 'warn');
+
+            // Log prototype methods for diagnostics
+            [['Recs', vmiRecs], ['Chart', vmiChart]].forEach(([label, vmi]) => {
+                if (!vmi) return;
+                try {
+                    const proto = Object.getPrototypeOf(vmi);
+                    const methods = Object.getOwnPropertyNames(proto).filter(m => m !== 'constructor');
+                    log(`${label} VMI methods: ${methods.join(', ')}`, 'info');
+                } catch (e) { }
+                try {
+                    const props = vmi.properties;
+                    if (props) {
+                        log(`${label} VMI properties: ${JSON.stringify(props.map(p => ({
+                            name: p.name || p,
+                            type: p.type || 'unknown'
+                        })))}`, 'info');
+                    }
+                } catch (e) {
+                    log(`${label} VMI .properties error: ${e.message}`, 'warn');
+                }
+            });
+
+            const vmSection = createSection('🔗 ControlsVM — Data-Bound Properties', 'vm-section');
+            const vmBody = vmSection.querySelector('.section-body');
+            let propCount = 0;
+
+            // ── Explicitly build "language" enum control ──
+            // Grab the language enum handle from EVERY VMI that has it
+            const langHandles = [];
+            [['Recs', vmiRecs], ['Chart', vmiChart]].forEach(([label, vmi]) => {
+                if (!vmi) return;
+                try {
+                    const h = vmi.enum('language');
+                    if (h) {
+                        langHandles.push({ label, handle: h });
+                        log(`  ✓ language enum found on ${label} VMI, value="${h.value}"`, 'success');
+                    }
+                } catch (e) {
+                    log(`  language enum not found on ${label}: ${e.message}`, 'warn');
+                }
+            });
+
+            if (langHandles.length > 0) {
+                let opts = ['ru', 'en', 'kk'];
+                try {
+                    const h0 = langHandles[0].handle;
+                    const runtimeOpts = typeof h0.options === 'function' ? h0.options() : h0.options;
+                    if (runtimeOpts && runtimeOpts.length > 0) opts = runtimeOpts;
+                } catch (e) { }
+                if (opts.length === 0 && fileEnums) {
+                    opts = getEnumValuesFromFile('language', langHandles[0].handle);
+                }
+
+                const sel = makeEnumSelect(langHandles[0].handle.value, opts, val => {
+                    langHandles.forEach(({ label, handle }) => {
+                        try {
+                            handle.value = val;
+                            log(`  language = "${val}" on ${label}`, 'info');
+                        } catch (e) {
+                            log(`  Failed to set language on ${label}: ${e.message}`, 'error');
+                        }
+                    });
+                });
+                vmBody.appendChild(createControlRow('language', 'enum', 'type-enum', sel));
+                propCount++;
+                log(`  language enum control created (bound to ${langHandles.map(h => h.label).join(' + ')})`, 'success');
+            } else {
+                log('  ⚠ language enum not found on any VMI', 'warn');
+            }
+
+            // ── Explicitly build "playChartAnimation" boolean control ──
+            // Grab the boolean handle from EVERY VMI that has it
+            const playHandles = [];
+            [['Recs', vmiRecs], ['Chart', vmiChart]].forEach(([label, vmi]) => {
+                if (!vmi) return;
+                try {
+                    const h = vmi.boolean('playChartAnimation');
+                    if (h) {
+                        playHandles.push({ label, handle: h });
+                        log(`  ✓ playChartAnimation boolean found on ${label} VMI, value=${h.value}`, 'success');
+                    }
+                } catch (e) {
+                    log(`  playChartAnimation not found on ${label}: ${e.message}`, 'warn');
+                }
+            });
+
+            // Force create toggle for playChartAnimation (Chart only)
+            let chartVal = true;
+            try {
+                if (vmiChart) {
+                    const h = vmiChart.boolean('playChartAnimation');
+                    if (h) chartVal = h.value;
+                }
+            } catch (e) { }
+
+            const toggle = makeBooleanToggle(chartVal, val => {
+                if (vmiChart) {
+                    try {
+                        const h = vmiChart.boolean('playChartAnimation');
+                        if (h) {
+                            h.value = val;
+                            log(`playChartAnimation = ${val} (Chart)`, 'info');
+                        } else {
+                            log('playChartAnimation property not found on Chart', 'warn');
+                        }
+                    } catch (e) { log(e.message, 'error'); }
+                } else {
+                    log('Chart VMI missing', 'warn');
+                }
+            });
+
+            vmBody.appendChild(createControlRow('playChartAnimation', 'boolean', 'type-boolean', toggle));
+            propCount++;
+
+
+            // ── Discover any OTHER properties from both VMIs ──
+            const allVMIs = [vmiRecs, vmiChart].filter(Boolean);
+            const discoveredNames = new Set(['language', 'playChartAnimation']); // already handled
+
+            allVMIs.forEach((vmi, idx) => {
+                const label = idx === 0 ? 'Recs' : 'Chart';
+                try {
+                    const propList = vmi.properties;
+                    if (propList && propList.length > 0) {
+                        propList.forEach(prop => {
+                            const name = prop.name || prop;
+                            if (discoveredNames.has(name)) return; // skip already-handled
+                            discoveredNames.add(name);
+
+                            const type = (prop.type || '').toString().toLowerCase();
+                            log(`  Extra property: "${name}" type="${type}" (from ${label})`, 'info');
+
+                            let widget = null;
+                            let typeLabel = type;
+                            let typeClass = 'type-string';
+
+                            try {
+                                switch (type) {
+                                    case 'boolean': {
+                                        const p = vmi.boolean(name);
+                                        if (p) {
+                                            typeClass = 'type-boolean';
+                                            widget = makeBooleanToggle(p.value, val => {
+                                                // Sync to all VMIs
+                                                allVMIs.forEach(v => { try { const h = v.boolean(name); if (h) h.value = val; } catch (e) { } });
+                                                log(`${name} = ${val}`, 'info');
+                                            });
+                                        }
+                                        break;
+                                    }
+                                    case 'number': {
+                                        const p = vmi.number(name);
+                                        if (p) {
+                                            typeClass = 'type-number';
+                                            widget = makeNumberInput(p.value, val => { p.value = val; log(`${name} = ${val}`, 'info'); });
+                                        }
+                                        break;
+                                    }
+                                    case 'string': {
+                                        const p = vmi.string(name);
+                                        if (p) {
+                                            typeClass = 'type-string';
+                                            widget = makeTextInput(p.value, val => { p.value = val; log(`${name} = "${val}"`, 'info'); });
+                                        }
+                                        break;
+                                    }
+                                    case 'enum': {
+                                        const p = vmi.enum(name);
+                                        if (p) {
+                                            typeClass = 'type-enum';
+                                            let opts = [];
+                                            try {
+                                                if (typeof p.options === 'function') opts = p.options();
+                                                else if (Array.isArray(p.options)) opts = p.options;
+                                            } catch (e) { }
+                                            if (opts.length === 0) opts = getEnumValuesFromFile(name, p);
+                                            widget = opts.length > 0
+                                                ? makeEnumSelect(p.value, opts, val => {
+                                                    allVMIs.forEach(v => { try { const h = v.enum(name); if (h) h.value = val; } catch (e) { } });
+                                                    log(`${name} = "${val}"`, 'info');
+                                                })
+                                                : makeTextInput(p.value, val => { p.value = val; log(`${name} = "${val}"`, 'info'); });
+                                        }
+                                        break;
+                                    }
+                                    case 'color': {
+                                        const p = vmi.color(name);
+                                        if (p) {
+                                            typeClass = 'type-color';
+                                            widget = makeColorInput(p.value, val => { p.value = val; log(`${name} color updated`, 'info'); });
+                                        }
+                                        break;
+                                    }
+                                    case 'trigger': {
+                                        const p = vmi.trigger(name);
+                                        if (p) {
+                                            typeClass = 'type-trigger';
+                                            widget = makeTriggerButton(() => {
+                                                if (typeof p.trigger === 'function') p.trigger();
+                                                else if (typeof p.fire === 'function') p.fire();
+                                                log(`${name} fired!`, 'warn');
+                                            });
+                                        }
+                                        break;
+                                    }
+                                    default: {
+                                        const tried = tryAllAccessors(vmi, name, name);
+                                        if (tried) { widget = tried.widget; typeLabel = tried.typeLabel; typeClass = tried.typeClass; }
+                                    }
+                                }
+                            } catch (e) {
+                                log(`  Error accessing "${name}": ${e.message}`, 'error');
+                            }
+
+                            if (widget) {
+                                vmBody.appendChild(createControlRow(name, typeLabel, typeClass, widget));
+                                propCount++;
+                            }
+                        });
+                    }
+                } catch (e) { /* .properties not available on this VMI */ }
+            });
+
+            if (propCount === 0) {
+                const empty = document.createElement('div');
+                empty.className = 'empty-state';
+                empty.innerHTML = '<div class="icon">🔍</div><p>No properties discovered automatically.<br>Check the console for diagnostics.</p>';
+                vmBody.appendChild(empty);
+            } else {
+                log(`Total ControlsVM properties found: ${propCount}`, 'success');
+            }
+
+            controlsContainer.appendChild(vmSection);
+            log('All controls built.', 'success');
+        }
+
         // ─── Resize ─────────────────────────────────
         window.addEventListener('resize', () => {
-            if (riveInstance) riveInstance.resizeDrawingSurfaceToCanvas();
+            if (riveRecs) riveRecs.resizeDrawingSurfaceToCanvas();
+            if (riveChart) riveChart.resizeDrawingSurfaceToCanvas();
         });
 
         // ─── Boot ───────────────────────────────────
