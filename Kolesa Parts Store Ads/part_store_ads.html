@@ -1,0 +1,1328 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kolesa Parts Store Ads — Recs Artboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@rive-app/canvas@latest"></script>
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #0f1117;
+            --surface: #1a1d27;
+            --surface-hover: #222632;
+            --border: #2a2e3a;
+            --text: #e4e6ed;
+            --text-muted: #8b8fa3;
+            --accent: #6c5ce7;
+            --accent-light: #a29bfe;
+            --success: #00cec9;
+            --warning: #fdcb6e;
+            --danger: #ff7675;
+            --radius: 12px;
+            --radius-sm: 8px;
+        }
+
+        html,
+        body {
+            height: 100%;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.5;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ── Header ─────────────────────────────── */
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border);
+            background: linear-gradient(180deg, rgba(108, 92, 231, .08) 0%, transparent 100%);
+        }
+
+        .header h1 {
+            font-size: 18px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent-light), var(--success));
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header .badge {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 3px 10px;
+            border-radius: 20px;
+            background: rgba(108, 92, 231, .18);
+            color: var(--accent-light);
+            letter-spacing: .5px;
+        }
+
+        /* ── Main Layout ────────────────────────── */
+        .main {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* ── Canvas Panel ───────────────────────── */
+        .canvas-panel {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            position: relative;
+            background:
+                radial-gradient(ellipse at 30% 50%, rgba(108, 92, 231, .06) 0%, transparent 60%),
+                radial-gradient(ellipse at 70% 50%, rgba(0, 206, 201, .04) 0%, transparent 60%);
+        }
+
+        #rive-canvas {
+            width: 100%;
+            max-width: 600px;
+            max-height: 80vh;
+            aspect-ratio: 9 / 16;
+            border-radius: var(--radius);
+            background: var(--surface);
+            box-shadow:
+                0 0 0 1px var(--border),
+                0 20px 60px rgba(0, 0, 0, .4);
+        }
+
+        /* ── Sidebar Controls ──────────────────── */
+        .sidebar {
+            width: 400px;
+            min-width: 400px;
+            border-left: 1px solid var(--border);
+            background: var(--surface);
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: var(--border) transparent;
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px;
+        }
+
+        .sidebar-header {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background: var(--surface);
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .sidebar-header h2 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* ── Section ────────────────────────────── */
+        .section {
+            border-bottom: 1px solid var(--border);
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 20px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            user-select: none;
+            transition: background .15s;
+        }
+
+        .section-title:hover {
+            background: var(--surface-hover);
+        }
+
+        .section-title .icon {
+            font-size: 11px;
+            transition: transform .2s;
+        }
+
+        .section.collapsed .section-title .icon {
+            transform: rotate(-90deg);
+        }
+
+        .section.collapsed .section-body {
+            display: none;
+        }
+
+        .section-body {
+            padding: 4px 20px 16px;
+        }
+
+        /* ── Control Row ────────────────────────── */
+        .control-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, .03);
+            gap: 12px;
+        }
+
+        .control-row:last-child {
+            border-bottom: none;
+        }
+
+        .control-label {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text);
+            flex-shrink: 0;
+            max-width: 50%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .control-type {
+            font-size: 10px;
+            font-weight: 600;
+            padding: 2px 7px;
+            border-radius: 4px;
+            letter-spacing: .4px;
+            text-transform: uppercase;
+            flex-shrink: 0;
+        }
+
+        .type-boolean {
+            background: rgba(0, 206, 201, .12);
+            color: var(--success);
+        }
+
+        .type-number {
+            background: rgba(108, 92, 231, .15);
+            color: var(--accent-light);
+        }
+
+        .type-trigger {
+            background: rgba(253, 203, 110, .12);
+            color: var(--warning);
+        }
+
+        .type-string {
+            background: rgba(255, 118, 117, .12);
+            color: var(--danger);
+        }
+
+        .type-enum {
+            background: rgba(162, 155, 254, .12);
+            color: var(--accent-light);
+        }
+
+        .type-color {
+            background: rgba(0, 206, 201, .12);
+            color: var(--success);
+        }
+
+        .type-list {
+            background: rgba(253, 203, 110, .12);
+            color: var(--warning);
+        }
+
+        .type-viewmodel {
+            background: rgba(108, 92, 231, .15);
+            color: var(--accent-light);
+        }
+
+        .control-widget {
+            flex-shrink: 0;
+        }
+
+        .control-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        /* ── Nesting Indicator ──────────────────── */
+        .nest-indicator {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 8px 0 4px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--accent-light);
+            letter-spacing: .3px;
+        }
+
+        .nest-indicator .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--accent);
+        }
+
+        /* ── Toggle Switch ──────────────────────── */
+        .toggle {
+            position: relative;
+            width: 44px;
+            height: 24px;
+            cursor: pointer;
+        }
+
+        .toggle input {
+            display: none;
+        }
+
+        .toggle-track {
+            position: absolute;
+            inset: 0;
+            border-radius: 12px;
+            background: var(--border);
+            transition: background .2s;
+        }
+
+        .toggle input:checked+.toggle-track {
+            background: var(--accent);
+        }
+
+        .toggle-thumb {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #fff;
+            transition: transform .2s;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, .3);
+        }
+
+        .toggle input:checked~.toggle-thumb {
+            transform: translateX(20px);
+        }
+
+        /* ── Inputs ─────────────────────────────── */
+        .number-input,
+        .text-input {
+            padding: 6px 10px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            background: var(--bg);
+            color: var(--text);
+            font-size: 13px;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+            transition: border-color .15s;
+        }
+
+        .number-input {
+            width: 80px;
+            text-align: center;
+        }
+
+        .text-input {
+            width: 150px;
+        }
+
+        .number-input:focus,
+        .text-input:focus {
+            border-color: var(--accent);
+        }
+
+        /* ── Select ─────────────────────────────── */
+        .select-input {
+            padding: 6px 28px 6px 10px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            background: var(--bg);
+            color: var(--text);
+            font-size: 13px;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%238b8fa3'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            cursor: pointer;
+            transition: border-color .15s;
+        }
+
+        .select-input:focus {
+            border-color: var(--accent);
+        }
+
+        /* ── Trigger Button ─────────────────────── */
+        .trigger-btn {
+            padding: 6px 16px;
+            border: 1px solid var(--warning);
+            border-radius: var(--radius-sm);
+            background: rgba(253, 203, 110, .08);
+            color: var(--warning);
+            font-size: 12px;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            transition: all .15s;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+        }
+
+        .trigger-btn:hover {
+            background: rgba(253, 203, 110, .18);
+        }
+
+        .trigger-btn:active {
+            transform: scale(.95);
+            background: rgba(253, 203, 110, .25);
+        }
+
+        /* ── Color Swatch ───────────────────────── */
+        .color-input-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .color-swatch {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            border: 2px solid var(--border);
+            cursor: pointer;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .color-swatch::-webkit-color-swatch-wrapper {
+            padding: 0;
+        }
+
+        .color-swatch::-webkit-color-swatch {
+            border: none;
+        }
+
+        /* ── Info Row ────────────────────────────── */
+        .info-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 0;
+            font-size: 13px;
+        }
+
+        .info-row .label {
+            color: var(--text-muted);
+        }
+
+        .info-row .value {
+            color: var(--text);
+            font-weight: 500;
+            background: var(--bg);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        /* ── Loading & Empty ────────────────────── */
+        .loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 20px;
+            gap: 16px;
+        }
+
+        .spinner {
+            width: 32px;
+            height: 32px;
+            border: 3px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .loading p {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .empty-state {
+            padding: 40px 20px;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .empty-state .icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+
+        .empty-state p {
+            font-size: 13px;
+        }
+
+        /* ── Console ────────────────────────────── */
+        .console-section {
+            border-top: 1px solid var(--border);
+        }
+
+        .console-log {
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 10px 20px;
+            background: rgba(0, 0, 0, .2);
+            font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+            font-size: 11px;
+            line-height: 1.6;
+        }
+
+        .console-log .log-entry {
+            color: var(--text-muted);
+        }
+
+        .console-log .log-entry.info {
+            color: var(--accent-light);
+        }
+
+        .console-log .log-entry.success {
+            color: var(--success);
+        }
+
+        .console-log .log-entry.warn {
+            color: var(--warning);
+        }
+
+        .console-log .log-entry.error {
+            color: var(--danger);
+        }
+
+        /* ── Responsive ─────────────────────────── */
+        @media (max-width: 860px) {
+            .main {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                min-width: auto;
+                border-left: none;
+                border-top: 1px solid var(--border);
+                max-height: 50vh;
+            }
+
+            .canvas-panel {
+                padding: 16px;
+            }
+
+            #rive-canvas {
+                max-width: 100%;
+                max-height: 40vh;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <div class="header">
+        <h1>Kolesa Parts Store Ads</h1>
+        <span class="badge">RECS ARTBOARD</span>
+    </div>
+
+    <!-- Main Layout -->
+    <div class="main">
+        <div class="canvas-panel">
+            <canvas id="rive-canvas"></canvas>
+        </div>
+
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h2>Data-Bound Properties</h2>
+            </div>
+            <div id="controls-container">
+                <div class="loading" id="loading-state">
+                    <div class="spinner"></div>
+                    <p>Loading Rive file…</p>
+                </div>
+            </div>
+            <!-- Console -->
+            <div class="console-section">
+                <div class="section-title"
+                    onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'block' : 'none'">
+                    <span>Console</span>
+                    <span class="icon">▼</span>
+                </div>
+                <div class="console-log" id="console-log"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ─── Logging ────────────────────────────────
+        const logEl = document.getElementById('console-log');
+        function log(msg, type = '') {
+            const entry = document.createElement('div');
+            entry.className = 'log-entry ' + type;
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+            logEl.appendChild(entry);
+            logEl.scrollTop = logEl.scrollHeight;
+            console.log(msg);
+        }
+
+        // ─── Globals ────────────────────────────────
+        let riveInstance = null;
+        const controlsContainer = document.getElementById('controls-container');
+
+        // ─── Helpers ────────────────────────────────
+        function createSection(title, id, collapsed = false) {
+            const s = document.createElement('div');
+            s.className = 'section' + (collapsed ? ' collapsed' : '');
+            s.id = id;
+            s.innerHTML = `
+        <div class="section-title" onclick="this.parentElement.classList.toggle('collapsed')">
+          <span>${title}</span>
+          <span class="icon">▼</span>
+        </div>
+        <div class="section-body"></div>`;
+            return s;
+        }
+
+        function createControlRow(label, typeLabel, typeClass, widget) {
+            const row = document.createElement('div');
+            row.className = 'control-row';
+            const left = document.createElement('div');
+            left.className = 'control-left';
+            const nameSpan = document.createElement('span');
+            nameSpan.className = 'control-label';
+            nameSpan.textContent = label;
+            nameSpan.title = label;
+            const typeSpan = document.createElement('span');
+            typeSpan.className = 'control-type ' + typeClass;
+            typeSpan.textContent = typeLabel;
+            left.appendChild(nameSpan);
+            left.appendChild(typeSpan);
+            row.appendChild(left);
+            const w = document.createElement('div');
+            w.className = 'control-widget';
+            w.appendChild(widget);
+            row.appendChild(w);
+            return row;
+        }
+
+        function addNestIndicator(container, path) {
+            const ind = document.createElement('div');
+            ind.className = 'nest-indicator';
+            ind.innerHTML = `<span class="dot"></span> ${path}`;
+            container.appendChild(ind);
+        }
+
+        // ─── Widget Builders ────────────────────────
+        function makeBooleanToggle(value, onChange) {
+            const lbl = document.createElement('label');
+            lbl.className = 'toggle';
+            const inp = document.createElement('input');
+            inp.type = 'checkbox';
+            inp.checked = value;
+            inp.addEventListener('change', () => onChange(inp.checked));
+            const track = document.createElement('div');
+            track.className = 'toggle-track';
+            const thumb = document.createElement('div');
+            thumb.className = 'toggle-thumb';
+            lbl.append(inp, track, thumb);
+            return lbl;
+        }
+
+        function makeNumberInput(value, onChange) {
+            const inp = document.createElement('input');
+            inp.type = 'number';
+            inp.className = 'number-input';
+            inp.value = value;
+            inp.step = 'any';
+            inp.addEventListener('input', () => onChange(parseFloat(inp.value) || 0));
+            return inp;
+        }
+
+        function makeTextInput(value, onChange) {
+            const inp = document.createElement('input');
+            inp.type = 'text';
+            inp.className = 'text-input';
+            inp.value = value || '';
+            inp.addEventListener('input', () => onChange(inp.value));
+            return inp;
+        }
+
+        function makeTriggerButton(onFire) {
+            const btn = document.createElement('button');
+            btn.className = 'trigger-btn';
+            btn.textContent = 'FIRE';
+            btn.addEventListener('click', () => {
+                onFire();
+                btn.style.transform = 'scale(.92)';
+                setTimeout(() => btn.style.transform = '', 150);
+            });
+            return btn;
+        }
+
+        function makeEnumSelect(currentValue, options, onChange) {
+            const sel = document.createElement('select');
+            sel.className = 'select-input';
+            options.forEach(opt => {
+                const o = document.createElement('option');
+                o.value = opt;
+                o.textContent = opt;
+                if (opt === currentValue) o.selected = true;
+                sel.appendChild(o);
+            });
+            sel.addEventListener('change', () => onChange(sel.value));
+            return sel;
+        }
+
+        function makeColorInput(packedValue, onChange) {
+            const r = ((packedValue >> 16) & 0xFF);
+            const g = ((packedValue >> 8) & 0xFF);
+            const b = (packedValue & 0xFF);
+            const hex = '#' + [r, g, b].map(c => c.toString(16).padStart(2, '0')).join('');
+            const wrapper = document.createElement('div');
+            wrapper.className = 'color-input-wrapper';
+            const inp = document.createElement('input');
+            inp.type = 'color';
+            inp.className = 'color-swatch';
+            inp.value = hex;
+            const hexLbl = document.createElement('span');
+            hexLbl.style.cssText = 'font-size:12px;color:var(--text-muted)';
+            hexLbl.textContent = hex;
+            inp.addEventListener('input', () => {
+                hexLbl.textContent = inp.value;
+                const h = inp.value;
+                const packed = (0xFF << 24)
+                    | (parseInt(h.slice(1, 3), 16) << 16)
+                    | (parseInt(h.slice(3, 5), 16) << 8)
+                    | parseInt(h.slice(5, 7), 16);
+                onChange(packed >>> 0);
+            });
+            wrapper.append(inp, hexLbl);
+            return wrapper;
+        }
+
+        // ─── Recursively discover VM properties ─────
+        function discoverVMProperties(vmi, container, pathPrefix = '') {
+            let count = 0;
+
+            // Try to list properties via the `properties` getter
+            let propList = null;
+            try {
+                propList = vmi.properties;
+                if (propList && propList.length > 0) {
+                    log(`  Found ${propList.length} properties via .properties at "${pathPrefix || 'root'}"`, 'success');
+                }
+            } catch (e) {
+                log(`  .properties not available at "${pathPrefix || 'root'}": ${e.message}`, 'warn');
+            }
+
+            if (propList && propList.length > 0) {
+                // We have a property list — iterate and create controls
+                propList.forEach(prop => {
+                    const name = prop.name || prop;
+                    const type = (prop.type || '').toString().toLowerCase();
+                    const fullPath = pathPrefix ? `${pathPrefix}/${name}` : name;
+
+                    log(`  Property: "${name}" type="${type}" path="${fullPath}"`, 'info');
+
+                    let widget = null;
+                    let typeLabel = type;
+                    let typeClass = 'type-string';
+
+                    try {
+                        switch (type) {
+                            case 'boolean': {
+                                const p = vmi.boolean(name);
+                                if (p) {
+                                    typeClass = 'type-boolean';
+                                    widget = makeBooleanToggle(p.value, val => {
+                                        p.value = val;
+                                        log(`${fullPath} = ${val}`, 'info');
+                                    });
+                                }
+                                break;
+                            }
+                            case 'number': {
+                                const p = vmi.number(name);
+                                if (p) {
+                                    typeClass = 'type-number';
+                                    widget = makeNumberInput(p.value, val => {
+                                        p.value = val;
+                                        log(`${fullPath} = ${val}`, 'info');
+                                    });
+                                }
+                                break;
+                            }
+                            case 'string': {
+                                const p = vmi.string(name);
+                                if (p) {
+                                    typeClass = 'type-string';
+                                    widget = makeTextInput(p.value, val => {
+                                        p.value = val;
+                                        log(`${fullPath} = "${val}"`, 'info');
+                                    });
+                                }
+                                break;
+                            }
+                            case 'enum': {
+                                const p = vmi.enum(name);
+                                if (p) {
+                                    typeClass = 'type-enum';
+                                    // Try to get available enum values
+                                    let opts = [];
+                                    try {
+                                        if (typeof p.options === 'function') opts = p.options();
+                                        else if (Array.isArray(p.options)) opts = p.options;
+                                    } catch (e) { }
+                                    if (opts.length === 0) {
+                                        // Try to get values from the file-level enums
+                                        opts = getEnumValuesFromFile(name, p);
+                                    }
+                                    if (opts.length > 0) {
+                                        widget = makeEnumSelect(p.value, opts, val => {
+                                            p.value = val;
+                                            log(`${fullPath} = "${val}"`, 'info');
+                                        });
+                                    } else {
+                                        widget = makeTextInput(p.value, val => {
+                                            p.value = val;
+                                            log(`${fullPath} = "${val}"`, 'info');
+                                        });
+                                    }
+                                }
+                                break;
+                            }
+                            case 'color': {
+                                const p = vmi.color(name);
+                                if (p) {
+                                    typeClass = 'type-color';
+                                    widget = makeColorInput(p.value, val => {
+                                        p.value = val;
+                                        log(`${fullPath} color updated`, 'info');
+                                    });
+                                }
+                                break;
+                            }
+                            case 'trigger': {
+                                const p = vmi.trigger(name);
+                                if (p) {
+                                    typeClass = 'type-trigger';
+                                    widget = makeTriggerButton(() => {
+                                        if (typeof p.trigger === 'function') p.trigger();
+                                        else if (typeof p.fire === 'function') p.fire();
+                                        log(`${fullPath} fired!`, 'warn');
+                                    });
+                                }
+                                break;
+                            }
+                            case 'viewmodel':
+                            case 'view model':
+                            case 'viewModel': {
+                                // Recurse into nested view model
+                                const nestedVMI = vmi.viewModel(name);
+                                if (nestedVMI) {
+                                    addNestIndicator(container, `↳ ${name} (ViewModel)`);
+                                    const nestedCount = discoverVMProperties(nestedVMI, container, fullPath);
+                                    count += nestedCount;
+                                    log(`  Nested VM "${name}" has ${nestedCount} properties`, 'info');
+                                }
+                                return; // don't add a control row for the VM itself
+                            }
+                            default: {
+                                // Try each accessor type
+                                const tried = tryAllAccessors(vmi, name, fullPath);
+                                if (tried) {
+                                    widget = tried.widget;
+                                    typeLabel = tried.typeLabel;
+                                    typeClass = tried.typeClass;
+                                }
+                            }
+                        }
+                    } catch (e) {
+                        log(`  Error accessing "${name}": ${e.message}`, 'error');
+                    }
+
+                    if (widget) {
+                        container.appendChild(createControlRow(name, typeLabel, typeClass, widget));
+                        count++;
+                    }
+                });
+            } else {
+                // No .properties — try brute-force discovery by probing accessor methods
+                log(`  No .properties at "${pathPrefix || 'root'}", trying known property names…`, 'warn');
+                count += probeKnownProperties(vmi, container, pathPrefix);
+            }
+
+            return count;
+        }
+
+        // ─── Try all accessor methods for a property ──
+        function tryAllAccessors(vmi, name, fullPath) {
+            const accessors = [
+                { method: 'boolean', typeLabel: 'boolean', typeClass: 'type-boolean', makeWidget: (p) => makeBooleanToggle(p.value, v => { p.value = v; log(`${fullPath} = ${v}`, 'info'); }) },
+                { method: 'number', typeLabel: 'number', typeClass: 'type-number', makeWidget: (p) => makeNumberInput(p.value, v => { p.value = v; log(`${fullPath} = ${v}`, 'info'); }) },
+                { method: 'string', typeLabel: 'string', typeClass: 'type-string', makeWidget: (p) => makeTextInput(p.value, v => { p.value = v; log(`${fullPath} = "${v}"`, 'info'); }) },
+                {
+                    method: 'enum', typeLabel: 'enum', typeClass: 'type-enum', makeWidget: (p) => {
+                        let opts = [];
+                        try { opts = typeof p.options === 'function' ? p.options() : (Array.isArray(p.options) ? p.options : []); } catch (e) { }
+                        if (opts.length === 0) opts = getEnumValuesFromFile(name, p);
+                        return opts.length > 0
+                            ? makeEnumSelect(p.value, opts, v => { p.value = v; log(`${fullPath} = "${v}"`, 'info'); })
+                            : makeTextInput(p.value, v => { p.value = v; log(`${fullPath} = "${v}"`, 'info'); });
+                    }
+                },
+                { method: 'color', typeLabel: 'color', typeClass: 'type-color', makeWidget: (p) => makeColorInput(p.value, v => { p.value = v; log(`${fullPath} color updated`, 'info'); }) },
+                { method: 'trigger', typeLabel: 'trigger', typeClass: 'type-trigger', makeWidget: (p) => makeTriggerButton(() => { (p.trigger || p.fire).call(p); log(`${fullPath} fired!`, 'warn'); }) },
+            ];
+
+            for (const a of accessors) {
+                if (typeof vmi[a.method] !== 'function') continue;
+                try {
+                    const p = vmi[a.method](name);
+                    if (p != null) {
+                        return { widget: a.makeWidget(p), typeLabel: a.typeLabel, typeClass: a.typeClass };
+                    }
+                } catch (e) { /* skip */ }
+            }
+
+            // Also try nested viewModel
+            if (typeof vmi.viewModel === 'function') {
+                try {
+                    const nested = vmi.viewModel(name);
+                    if (nested) return { isVM: true, nested, name };
+                } catch (e) { /* skip */ }
+            }
+
+            return null;
+        }
+
+        // ─── Fallback: probe known property names ───
+        function probeKnownProperties(vmi, container, pathPrefix) {
+            // Known names for the RecsVM based on user description
+            const knownNames = [
+                'propertyOfAnimVM', 'animLanguage',
+                // General common names
+                'language', 'lang', 'locale', 'title', 'subtitle', 'text', 'label', 'description', 'name',
+                'price', 'old_price', 'new_price', 'discount', 'count', 'rating',
+                'is_active', 'is_visible', 'liked', 'active', 'visible', 'enabled', 'selected',
+                'color', 'bg_color', 'theme', 'state', 'status', 'type', 'category',
+                'plus', 'premium', 'pro', 'vip',
+                'fire', 'fire_animation', 'trigger', 'tap',
+                'page', 'recs', 'progress', 'value',
+                'part_name', 'store_name', 'part_price', 'ad_title', 'ad_text', 'ad_price',
+                'phone', 'seller', 'in_stock', 'available', 'quantity',
+                'delivery', 'warranty', 'condition', 'currency', 'badge',
+                'button_text', 'cta', 'header', 'body', 'image', 'icon', 'photo',
+            ];
+
+            let count = 0;
+
+            // First, try to access nested viewModel "propertyOfAnimVM" directly
+            if (typeof vmi.viewModel === 'function') {
+                try {
+                    const animVM = vmi.viewModel('propertyOfAnimVM');
+                    if (animVM) {
+                        log(`  ✓ Found nested VM: "propertyOfAnimVM"`, 'success');
+                        addNestIndicator(container, '↳ propertyOfAnimVM (ViewModel)');
+
+                        // Now access animLanguage enum inside it
+                        try {
+                            const animLangEnum = animVM.enum('animLanguage');
+                            if (animLangEnum) {
+                                log(`  ✓ Found enum: "animLanguage" = "${animLangEnum.value}"`, 'success');
+                                let opts = ['ru', 'en', 'kk']; // Known values
+                                try {
+                                    const runtimeOpts = typeof animLangEnum.options === 'function' ? animLangEnum.options() : animLangEnum.options;
+                                    if (runtimeOpts && runtimeOpts.length > 0) opts = runtimeOpts;
+                                } catch (e) { }
+                                const sel = makeEnumSelect(animLangEnum.value, opts, val => {
+                                    animLangEnum.value = val;
+                                    log(`propertyOfAnimVM/animLanguage = "${val}"`, 'info');
+                                });
+                                container.appendChild(createControlRow('animLanguage', 'enum', 'type-enum', sel));
+                                count++;
+                            }
+                        } catch (e) {
+                            log(`  Error accessing animLanguage: ${e.message}`, 'error');
+                        }
+
+                        // Also discover any other properties in the nested VM
+                        try {
+                            const nestedProps = animVM.properties;
+                            if (nestedProps && nestedProps.length > 0) {
+                                nestedProps.forEach(prop => {
+                                    const pName = prop.name || prop;
+                                    if (pName === 'animLanguage') return; // already handled
+                                    const fullPath = `propertyOfAnimVM/${pName}`;
+                                    const tried = tryAllAccessors(animVM, pName, fullPath);
+                                    if (tried && !tried.isVM) {
+                                        container.appendChild(createControlRow(pName, tried.typeLabel, tried.typeClass, tried.widget));
+                                        count++;
+                                    }
+                                });
+                            }
+                        } catch (e) { /* .properties may not be available */ }
+
+                        return count; // We found the nested VM, no need for brute force
+                    }
+                } catch (e) {
+                    log(`  propertyOfAnimVM not found via viewModel(): ${e.message}`, 'warn');
+                }
+            }
+
+            // Also try path-based access: "propertyOfAnimVM/animLanguage"
+            try {
+                const enumByPath = vmi.enum('propertyOfAnimVM/animLanguage');
+                if (enumByPath) {
+                    log(`  ✓ Found enum by path: "propertyOfAnimVM/animLanguage" = "${enumByPath.value}"`, 'success');
+                    addNestIndicator(container, '↳ propertyOfAnimVM / animLanguage');
+                    const opts = ['ru', 'en', 'kk'];
+                    const sel = makeEnumSelect(enumByPath.value, opts, val => {
+                        enumByPath.value = val;
+                        log(`propertyOfAnimVM/animLanguage = "${val}"`, 'info');
+                    });
+                    container.appendChild(createControlRow('animLanguage', 'enum', 'type-enum', sel));
+                    count++;
+                    return count;
+                }
+            } catch (e) { /* skip */ }
+
+            // Brute force: try each known name with all accessor methods
+            knownNames.forEach(name => {
+                if (name === 'propertyOfAnimVM' || name === 'animLanguage') return; // already tried
+
+                // Try as viewModel first
+                if (typeof vmi.viewModel === 'function') {
+                    try {
+                        const nested = vmi.viewModel(name);
+                        if (nested) {
+                            addNestIndicator(container, `↳ ${name} (ViewModel)`);
+                            count += discoverVMProperties(nested, container, pathPrefix ? `${pathPrefix}/${name}` : name);
+                            return;
+                        }
+                    } catch (e) { /* skip */ }
+                }
+
+                const fullPath = pathPrefix ? `${pathPrefix}/${name}` : name;
+                const tried = tryAllAccessors(vmi, name, fullPath);
+                if (tried && !tried.isVM) {
+                    log(`  ✓ Found: "${name}" (${tried.typeLabel})`, 'success');
+                    container.appendChild(createControlRow(name, tried.typeLabel, tried.typeClass, tried.widget));
+                    count++;
+                }
+            });
+
+            return count;
+        }
+
+        // ─── Get enum values from file-level enums ──
+        let fileEnums = null;
+        function getEnumValuesFromFile(propertyName, enumProp) {
+            if (!fileEnums || !Array.isArray(fileEnums)) return [];
+            // Try to match the property to a file-level enum
+            for (const e of fileEnums) {
+                if (e.values && e.values.includes(enumProp?.value)) {
+                    return e.values;
+                }
+            }
+            return [];
+        }
+
+        // ─── Build State Machine Inputs UI ──────────
+        function buildSMInputsUI(riveInst, smName) {
+            const inputs = riveInst.stateMachineInputs(smName);
+            if (!inputs || inputs.length === 0) {
+                log(`  No inputs for SM "${smName}"`, 'warn');
+                return null;
+            }
+            const section = createSection(`⚙ State Machine: ${smName}`, `sm-${smName}`);
+            const body = section.querySelector('.section-body');
+
+            inputs.forEach(input => {
+                let widget, typeLabel, typeClass;
+                if (input.type === rive.StateMachineInputType.Boolean || input.type === 56) {
+                    typeLabel = 'bool'; typeClass = 'type-boolean';
+                    widget = makeBooleanToggle(input.value, v => { input.value = v; log(`SM.${input.name} = ${v}`, 'info'); });
+                } else if (input.type === rive.StateMachineInputType.Number || input.type === 68) {
+                    typeLabel = 'number'; typeClass = 'type-number';
+                    widget = makeNumberInput(input.value, v => { input.value = v; log(`SM.${input.name} = ${v}`, 'info'); });
+                } else if (input.type === rive.StateMachineInputType.Trigger || input.type === 58) {
+                    typeLabel = 'trigger'; typeClass = 'type-trigger';
+                    widget = makeTriggerButton(() => { input.fire(); log(`SM.${input.name} fired!`, 'warn'); });
+                } else {
+                    typeLabel = `t:${input.type}`; typeClass = 'type-string';
+                    widget = makeTextInput(String(input.value ?? ''), v => { input.value = v; log(`SM.${input.name} = "${v}"`, 'info'); });
+                }
+                body.appendChild(createControlRow(input.name, typeLabel, typeClass, widget));
+                log(`  SM Input: "${input.name}" (${typeLabel}) = ${input.value ?? '—'}`, 'info');
+            });
+
+            return section;
+        }
+
+        // ─── Build File Info UI ─────────────────────
+        function buildFileInfoUI(riveInst) {
+            const section = createSection('📄 File Info', 'file-info', true);
+            const body = section.querySelector('.section-body');
+            const contents = riveInst.contents;
+            if (contents?.artboards) {
+                contents.artboards.forEach(ab => {
+                    const row = document.createElement('div');
+                    row.className = 'info-row';
+                    row.innerHTML = `<span class="label">Artboard</span><span class="value">${ab.name || 'unnamed'}</span>`;
+                    body.appendChild(row);
+                    (ab.stateMachines || []).forEach(sm => {
+                        const r = document.createElement('div');
+                        r.className = 'info-row';
+                        r.style.paddingLeft = '16px';
+                        r.innerHTML = `<span class="label">└ SM</span><span class="value">${sm.name || sm}</span>`;
+                        body.appendChild(r);
+                    });
+                    (ab.animations || []).forEach(a => {
+                        const r = document.createElement('div');
+                        r.className = 'info-row';
+                        r.style.paddingLeft = '16px';
+                        r.innerHTML = `<span class="label">└ Anim</span><span class="value">${a.name || a}</span>`;
+                        body.appendChild(r);
+                    });
+                });
+            }
+
+            // Show file-level enums
+            if (fileEnums && fileEnums.length > 0) {
+                fileEnums.forEach(e => {
+                    const r = document.createElement('div');
+                    r.className = 'info-row';
+                    r.innerHTML = `<span class="label">Enum: ${e.name}</span><span class="value">${(e.values || []).join(', ')}</span>`;
+                    body.appendChild(r);
+                });
+            }
+            return section;
+        }
+
+        // ─── Rive Events ────────────────────────────
+        function setupRiveEvents(riveInst) {
+            try {
+                if (rive?.EventType?.RiveEvent) {
+                    riveInst.on(rive.EventType.RiveEvent, ev => {
+                        log(`🎯 RiveEvent: "${ev?.data?.name || 'unknown'}"`, 'success');
+                    });
+                }
+            } catch (e) { }
+        }
+
+        // ─── Initialize ─────────────────────────────
+        function initRive() {
+            log('Initializing Rive for Recs artboard…');
+            const canvas = document.getElementById('rive-canvas');
+
+            // Diagnostic load to discover artboards & state machines
+            const diagCanvas = document.createElement('canvas');
+            diagCanvas.width = 1;
+            diagCanvas.height = 1;
+
+            const diagRive = new rive.Rive({
+                src: 'part_store_ads_rc1.riv',
+                canvas: diagCanvas,
+                onLoad: () => {
+                    log('Diagnostic load complete', 'success');
+
+                    const contents = diagRive.contents;
+                    const artboards = contents?.artboards || [];
+
+                    log(`Found ${artboards.length} artboard(s)`, 'info');
+
+                    // Find "Recs" artboard
+                    const recsAB = artboards.find(ab =>
+                        ab.name.toLowerCase().includes('recs') || ab.name === 'Recs'
+                    );
+
+                    if (!recsAB) {
+                        log('❌ "Recs" artboard not found! Available:', 'error');
+                        artboards.forEach(ab => log(`  • "${ab.name}"`, 'info'));
+
+                        // Fallback: log all artboards and use first one
+                        const fallbackAB = artboards[0];
+                        if (fallbackAB) {
+                            log(`Using fallback artboard: "${fallbackAB.name}"`, 'warn');
+                            loadArtboard(fallbackAB, canvas, artboards);
+                        }
+                        return;
+                    }
+
+                    log(`✓ Found Recs artboard: "${recsAB.name}"`, 'success');
+                    const sms = recsAB.stateMachines || [];
+                    sms.forEach(sm => log(`  SM: "${sm.name || sm}"`, 'info'));
+
+                    // Get file-level enums
+                    try {
+                        fileEnums = diagRive.enums();
+                        if (fileEnums && fileEnums.length > 0) {
+                            log(`Found ${fileEnums.length} file-level enum(s):`, 'info');
+                            fileEnums.forEach(e => log(`  • ${e.name}: [${(e.values || []).join(', ')}]`, 'info'));
+                        }
+                    } catch (e) {
+                        log(`Could not get file-level enums: ${e.message}`, 'warn');
+                    }
+
+                    loadArtboard(recsAB, canvas, artboards);
+                },
+                onLoadError: err => {
+                    log('❌ Diagnostic load failed: ' + err, 'error');
+                }
+            });
+        }
+
+        function loadArtboard(artboardDef, canvas, allArtboards) {
+            const artboardName = artboardDef.name;
+            const smNames = (artboardDef.stateMachines || []).map(sm => sm.name || sm);
+            const firstSM = smNames[0];
+
+            log(`Loading artboard: "${artboardName}", SM: "${firstSM || 'none'}"`, 'info');
+
+            riveInstance = new rive.Rive({
+                src: 'part_store_ads_rc1.riv',
+                canvas: canvas,
+                autoplay: true,
+                autoBind: true,
+                artboard: artboardName,
+                stateMachines: firstSM || undefined,
+                layout: new rive.Layout({
+                    fit: rive.Fit.Contain,
+                    alignment: rive.Alignment.Center
+                }),
+                onLoad: () => {
+                    log(`✅ Artboard "${artboardName}" loaded!`, 'success');
+                    riveInstance.resizeDrawingSurfaceToCanvas();
+
+                    // Remove loading spinner
+                    const loadingEl = document.getElementById('loading-state');
+                    if (loadingEl) loadingEl.remove();
+
+                    // ── File Info ──
+                    const fileInfo = buildFileInfoUI(riveInstance);
+                    if (fileInfo) controlsContainer.appendChild(fileInfo);
+
+                    // ── State Machine Inputs ──
+                    const allSMNames = riveInstance.stateMachineNames || smNames;
+                    allSMNames.forEach(smn => {
+                        const smSection = buildSMInputsUI(riveInstance, smn);
+                        if (smSection) controlsContainer.appendChild(smSection);
+                    });
+
+                    // ── View Model Properties (the main goal) ──
+                    const vmi = riveInstance.viewModelInstance;
+                    log(`View model instance: ${vmi ? 'FOUND' : 'NOT FOUND'}`, vmi ? 'success' : 'error');
+
+                    if (vmi) {
+                        // Log prototype methods for diagnostics
+                        try {
+                            const proto = Object.getPrototypeOf(vmi);
+                            const methods = Object.getOwnPropertyNames(proto).filter(m => m !== 'constructor');
+                            log(`VMI methods: ${methods.join(', ')}`, 'info');
+                        } catch (e) { }
+
+                        // Try to get the VM property list
+                        try {
+                            const props = vmi.properties;
+                            if (props) {
+                                log(`VMI .properties: ${JSON.stringify(props.map(p => ({
+                                    name: p.name || p,
+                                    type: p.type || 'unknown'
+                                })))}`, 'info');
+                            }
+                        } catch (e) {
+                            log(`VMI .properties error: ${e.message}`, 'warn');
+                        }
+
+                        const vmSection = createSection('🔗 RecsVM — Data-Bound Properties', 'vm-section');
+                        const vmBody = vmSection.querySelector('.section-body');
+
+                        const propCount = discoverVMProperties(vmi, vmBody);
+
+                        if (propCount === 0) {
+                            const empty = document.createElement('div');
+                            empty.className = 'empty-state';
+                            empty.innerHTML = '<div class="icon">🔍</div><p>No properties discovered automatically.<br>Check the console for diagnostics.</p>';
+                            vmBody.appendChild(empty);
+                        } else {
+                            log(`Total data-bound properties found: ${propCount}`, 'success');
+                        }
+
+                        controlsContainer.appendChild(vmSection);
+                    }
+
+                    // ── Events ──
+                    setupRiveEvents(riveInstance);
+                    log('All controls built.', 'success');
+                },
+                onLoadError: err => {
+                    log(`❌ Failed to load: ${err}`, 'error');
+                    const loadingEl = document.getElementById('loading-state');
+                    if (loadingEl) {
+                        loadingEl.innerHTML = '<div class="empty-state"><div class="icon">❌</div><p>Failed to load Rive file</p></div>';
+                    }
+                }
+            });
+        }
+
+        // ─── Resize ─────────────────────────────────
+        window.addEventListener('resize', () => {
+            if (riveInstance) riveInstance.resizeDrawingSurfaceToCanvas();
+        });
+
+        // ─── Boot ───────────────────────────────────
+        window.addEventListener('DOMContentLoaded', () => {
+            if (typeof rive === 'undefined') {
+                log('❌ Rive library failed to load!', 'error');
+                return;
+            }
+            initRive();
+        });
+    </script>
+</body>
+
+</html>
