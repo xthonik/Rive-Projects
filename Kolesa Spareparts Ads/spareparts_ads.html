@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -761,7 +761,7 @@
         }
 
         // ─── Globals ────────────────────────────────
-        const RIV_FILE = 'spareparts_ads_prod.riv';
+        const RIV_FILE = 'spareparts_ads_prod_upd.riv';
         let riveRecs = null;
         let riveChart = null;
         let fileEnums = null;
@@ -1166,7 +1166,7 @@
                 const langEnum = vmi.enum('language');
                 if (langEnum) {
                     log(`  ✓ Found enum: "language" = "${langEnum.value}"`, 'success');
-                    let opts = ['ru', 'en', 'kk']; // Known values
+                    let opts = ['ru', 'en', 'kz']; // Known values
                     try {
                         const runtimeOpts = typeof langEnum.options === 'function' ? langEnum.options() : langEnum.options;
                         if (runtimeOpts && runtimeOpts.length > 0) opts = runtimeOpts;
@@ -1573,7 +1573,7 @@
             });
 
             if (langHandles.length > 0) {
-                let opts = ['ru', 'en', 'kk'];
+                let opts = ['ru', 'en', 'kz'];
                 try {
                     const h0 = langHandles[0].handle;
                     const runtimeOpts = typeof h0.options === 'function' ? h0.options() : h0.options;
